@@ -11,6 +11,11 @@
         (else (characteristic (f (- n 1)) (f (- n 2)) (f (- n 3))))
   ))
 
+(define (characteristic a b c) 
+  (+ a (* 2 b) (* 3 c))
+  )
+
+
 ; iterative process
 (define (f_ n)
   (define (fi v1 v2 v3 n)
@@ -19,7 +24,11 @@
           (else (fi (characteristic v1 v2 v3) v1 v2 (- n 1)))
      ))
   (fi 2 1 0 n)
-  )
+)
+
+
+(f_ 3)
+(f_ 4)
 
 (f 27) ; takes a few seconds
 ;Value: 4583236459

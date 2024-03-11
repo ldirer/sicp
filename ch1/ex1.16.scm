@@ -25,3 +25,5 @@
 (define (fast-expt-iter b n) (fast-expt-helper b n 1))
 
 (fast-expt-iter 3 2)
+(fast-expt-iter 2 5)
+; expected: 32

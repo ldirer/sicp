@@ -52,3 +52,33 @@
 ;   )
 ; Looks like... Maybe we could actually *implement* something based on that !
 
+
+; PP With Maud: this explains the 18 calls to 'remainder' !
+; /home/laurent/programming/sicp/scheme_runner.sh /home/laurent/programming/sicp/ch1/ex1.20.scm | grep "REMAINDER CALL" | sort | uniq -c
+; emulate normal order by wrapping values in functions
+; calling the function is the way we represent evaluating the value.
+(define (gcd_normal f_a f_b)
+  (cond ((begin (newline) (display "IF") (= (f_b) 0)) (begin (newline) (display "THEN") (f_a)))
+        (else (begin (newline) (display "ELSE") (gcd_normal f_b (remainder_normal f_a f_b))))
+        )
+  )
+
+
+(define (remainder_normal f_a f_b)
+  (lambda () (begin (newline) (display "REMAINDER CALL") (remainder (f_a) (f_b))))
+  )
+
+
+;(define (test) (
+;
+;                 define (test-helper stuff count-a count-b)
+;                 (define count-a 0)
+;                 (define count-b 0)
+;                 (gcd_normal (lambda () (begin () 206)) (lambda () (begin (newline) (display 40) 40)))
+;
+;                 ))
+;)
+
+(gcd_normal (lambda () (begin (newline) (display "LAME") (display 206) 206)) (lambda () (begin (newline) (display "LAME") (display 40) 40)))
+
+
