@@ -1,4 +1,4 @@
-(load "ch2/2.5/generic.scm")
+(load "ch2/2.5.1/generic.scm")
 
 
 (define (equ? x y)

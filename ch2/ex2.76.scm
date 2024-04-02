@@ -15,6 +15,9 @@
 ; if sum then deriv-sum
 ; if product then deriv-product
 
+; Pro: Go to source \o/
+; Con: everything is centralized, see below what needs to be done on new type/new operation.
+
 ; B. Data-directed style
 ; - implementations are isolated in packages.
 ; - they register procedures inside a symbol-to-procedure-by-type table using `put`.

@@ -1,4 +1,4 @@
-(load "ch2/2.5/apply.scm")
+(load "ch2/2.5.1/apply.scm")
 
 
 (define (install-scheme-number-package)

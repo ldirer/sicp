@@ -1,4 +1,4 @@
-(load "ch2/2.5/generic.scm")
+(load "ch2/2.5.1/generic.scm")
 
 ; we need to add this to get the interaction mentioned in the book
 ; there's a `magnitude` builtin in my scheme, makes it confusing if we don't define it.

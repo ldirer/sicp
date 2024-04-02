@@ -1,7 +1,7 @@
-(load "ch2/2.5/apply.scm")
+(load "ch2/2.5.1/apply.scm")
 
-(load "ch2/2.5/complex-polar.scm")
-(load "ch2/2.5/complex-rectangular.scm")
+(load "ch2/2.5.1/complex-polar.scm")
+(load "ch2/2.5.1/complex-rectangular.scm")
 
 (define (install-complex-package)
   (install-polar-package)

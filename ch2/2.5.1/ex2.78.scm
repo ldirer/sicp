@@ -1,4 +1,4 @@
-(load "ch2/2.5/generic.scm")
+(load "ch2/2.5.1/generic.scm")
 
 ;(add 1 3)
 ;Bad tagged datum: TYPE-TAG 1
