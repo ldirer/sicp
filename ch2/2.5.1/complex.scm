@@ -1,5 +1,3 @@
-(load "ch2/2.5.1/apply.scm")
-
 (load "ch2/2.5.1/complex-polar.scm")
 (load "ch2/2.5.1/complex-rectangular.scm")
 

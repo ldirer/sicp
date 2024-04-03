@@ -1,6 +1,3 @@
-(load "ch2/2.5.1/apply.scm")
-
-
 
 (define (install-rational-package)
   ;; internal procedures
@@ -46,6 +43,10 @@
     (= 0 (numer x))
     )
   (put '=zero? '(rational) =zero?)
+
+  ; ex2.83
+  (define (raise-rational r) (make-complex-from-real-imag (/ (numer r) (denom r)) 1))
+  (put 'raise '(rational) raise-rational)
 
   'done
   )

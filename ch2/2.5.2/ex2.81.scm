@@ -1,11 +1,7 @@
-;load the simpler number representation
-;(load "ch2/2.5.1/ex2.78.scm")
-
 ; load the new apply-generic.
 ; NOTE THIS DEFINES GLOBAL VARIABLES AND NEEDS TO BE CALLED BEFORE ANY CODE REGISTRATING THINGS (=installing packages)
 ; order matters
-(load "ch2/2.5.2/apply.scm")
-(load "ch2/2.5.1/generic.scm")
+(load "ch2/2.5.2/generic.scm")
 
 ;
 ;(define (exp x y) (apply-generic 'exp x y))
@@ -17,14 +13,31 @@
 (put 'exp '(scheme-number scheme-number) (lambda (x y) (expt x y)))
 
 (define (exp x y) (apply-generic 'exp x y))
-
-(number? 3)
-;expected: true
 ;
 ;
-;
-
 (exp 3 4)
+; expected: 81
+
 (define z (make-complex-from-real-imag 3 4))
-(exp z z)
-; Because the complex package didn't register `'exp`, this does not
+
+; a.
+;(exp z z)
+; expected (Because the complex package didn't register `'exp`)
+; "No method for these types (exp (complex complex))"
+
+
+; With Louis Reasoner coercion procedures
+(define (scheme-number->scheme-number n) n)
+(define (complex->complex n) n)
+(put-coercion 'scheme-number 'scheme-number scheme-number->scheme-number)
+(put-coercion 'complex 'complex complex->complex)
+
+;(exp z z)
+; infinite loop !
+
+; b.
+; `apply-generic` works correctly as it is !
+
+;c. done in `apply.scm`.
+
+

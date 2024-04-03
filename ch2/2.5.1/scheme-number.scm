@@ -1,5 +1,3 @@
-(load "ch2/2.5.1/apply.scm")
-
 
 (define (install-scheme-number-package)
   (define (tag x) (attach-tag 'scheme-number x))
@@ -23,6 +21,10 @@
     (= 0 x)
     )
   (put '=zero? '(scheme-number) =zero?)
+
+  ; ex2.83
+  (define (raise-integer n) (make-rational n 1))
+  (put 'raise '(scheme-number) raise-integer)
 
   'done
   )
