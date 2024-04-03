@@ -1,0 +1,20 @@
+(load "ch2/2.5.2/apply.scm")
+
+;generic arithmetic
+(define (add x y) (apply-generic 'add x y))
+(define (sub x y) (apply-generic 'sub x y))
+(define (mul x y) (apply-generic 'mul x y))
+(define (div x y) (apply-generic 'div x y))
+(define (raise obj) (apply-generic 'raise obj))
+(define (=zero? obj) (apply-generic '=zero? obj))
+(define (negate x) (apply-generic 'negate x))
+
+(load "ch2/2.5.1/complex.scm")
+(load "ch2/2.5.1/rational.scm")
+(load "ch2/2.5.1/scheme-number.scm")
+(load "ch2/2.5.3/polynomial.scm")
+(install-complex-package)
+(install-rational-package)
+(install-scheme-number-package)
+(install-polynomial-package)
+

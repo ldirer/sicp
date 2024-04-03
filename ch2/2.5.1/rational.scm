@@ -39,14 +39,22 @@
     )
   (put 'equ? '(rational rational) rational-equ?)
   ; ex2.80
-  (define (=zero? x)
-    (= 0 (numer x))
+  (define (rational=zero? x)
+    (=zero? (numer x))
     )
-  (put '=zero? '(rational) =zero?)
+  (put '=zero? '(rational) rational=zero?)
 
   ; ex2.83
   (define (raise-rational r) (make-complex-from-real-imag (/ (numer r) (denom r)) 1))
   (put 'raise '(rational) raise-rational)
+
+  ; ex2.88
+  ; I'm relying on - 0 .. rather than a call to `negate` because the latter produces an object tagged with `scheme-number`
+  ; when make-rat runs it calls gcd, and gcd doesn't know what to do with a 'scheme number'.
+  ; if the simplification from ex2.78 was fully implemented (and the tag on 'scheme-number' removed entirely) we could
+  ; use negate here I think.
+  (define (negate-rat x) (make-rat (- 0 (numer x)) (denom x)))
+  (put 'negate '(rational) negate-rat)
 
   'done
   )

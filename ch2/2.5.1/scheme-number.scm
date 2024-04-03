@@ -17,14 +17,18 @@
   (put 'equ? '(scheme-number scheme-number) number-equ?)
 
   ; ex2.80
-  (define (=zero? x)
+  (define (=zero-num? x)
     (= 0 x)
     )
-  (put '=zero? '(scheme-number) =zero?)
+  (put '=zero? '(scheme-number) =zero-num?)
 
   ; ex2.83
   (define (raise-integer n) (make-rational n 1))
   (put 'raise '(scheme-number) raise-integer)
+
+  ; ex2.88
+  (define (negate x) (sub 0 x))
+  (put 'negate '(scheme-number) negate)
 
   'done
   )

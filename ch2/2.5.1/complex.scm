@@ -59,12 +59,18 @@
     )
   (put 'equ? '(complex complex) complex-equ?)
   ; ex2.80
-  (define (=zero? z)
-    (and (= (real-part z) 0) (= (imag-part z) 0))
+  (define (complex=zero? z)
+    (and (=zero? (real-part z)) (=zero? (imag-part z)))
     )
-  (put '=zero? '(complex) =zero?)
+  (put '=zero? '(complex) complex=zero?)
 
   'done
+
+  ; ex2.88
+  ; I think we should be defining this on polar and rectangular representations. And call the generic `negate`.
+  ; trying a shortcut by using subtraction instead.
+  (define (negate x) (sub (make-from-real-imag 0 0) x))
+  (put 'negate '(complex) negate)
   )
 
 (define (make-complex-from-real-imag x y)
