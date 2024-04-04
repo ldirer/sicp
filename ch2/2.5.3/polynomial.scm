@@ -88,6 +88,8 @@
   ; ex2.88
   ; note the key to make this work is to define negate as a generic operation (on other data types).
   ; this is what makes the 'recursive call' eventually terminate.
+  ; Also note that using `map` here breaks an abstraction. It relies on the fact that `term-list` is represented as a list.
+  ; See: https://eli.thegreenplace.net/2007/09/21/sicp-section-253 for an alternative.
   (define (negate-poly p)
     (make-poly (variable p) (map (lambda (term) (make-term (order term) (negate (coeff term)))) (term-list p)))
     )

@@ -21,6 +21,7 @@
 (fringe (list x x))
 ; expected: (1 2 3 4 1 2 3 4)
 
+; recursive version of fringe
 (define (fringe2 node)
   (cond ((null? node) (list))
     ; leaf node
@@ -35,3 +36,25 @@
 
 (fringe2 (list x x))
 ; expected: (1 2 3 4 1 2 3 4)
+
+
+(fringe2 '(1 2 (3 4) (5) (6 (7 8))))
+; expected: (1 2 3 4 5 6 7 8)
+
+
+; iterative version (programming with reading group)
+(define (fringe-iter node)
+
+  (define (iter left right result-list)
+    (cond
+      ((and (null? left) (null? right)) (reverse result-list))
+      ; leaf node
+      ((not (pair? left)) (iter right (list) (cons left result-list)))
+      (else (iter (car left) (append (cdr left) right) result-list))
+      )
+    )
+  (iter node (list) (list))
+  )
+
+(fringe-iter '(1 2 (3 4) (5) (6 (7 8))))
+; expected: (1 2 3 4 5 6 7 8)

@@ -63,3 +63,27 @@
 
 
 
+; this has a lot more precise writing. Nice ! (ctrl+F for 'compare conventional, data-directed, and message-passing')
+;https://people.eecs.berkeley.edu/~bh/61a-pages/Solutions/week7
+; --> I don't *really* understand the explanations given there.
+
+
+; Specifically, it says to "add a new operation" :
+
+; > For message-passing style, we modify each of the type dispatch
+; > procedures to accept a new message corresponding to the new
+; > operator, dispatching to the appropriate low-level procedure.
+
+; then later :
+
+; > Conventional style is certainly INappropriate when many new types
+; > will be invented, because lots of existing procedures need to be
+; > modified.
+; >
+; > Similarly, message-passing is INappropriate when many new operators
+; > will be invented and applied to existing types.
+
+; I don't really understand that last part.
+; I feel like : a new operator is added. We need to write the methods. Where is the overhead ?
+; Might need a side by side comparison with real code.
+
