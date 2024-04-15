@@ -1,4 +1,8 @@
 (define (install-polynomial-package)
+  (load "ch2/2.5.3/ex2.90/termlist_dense.scm")
+  (load "ch2/2.5.3/ex2.90/termlist_sparse.scm")
+  (install-termlist-sparse-package)
+  (install-termlist-dense-package)
   ;; internal procedures
   ;; representation of poly
   (define (make-poly variable term-list) (cons variable term-list))
@@ -9,18 +13,6 @@
     (and (variable? v1) (variable? v2) (eq? v1 v2)))
   (define (variable? x) (symbol? x))
 
-  ;; representation of terms and term lists
-  (define (adjoin-term term term-list)
-    (if (=zero? (coeff term))
-      term-list
-      (cons term term-list)))
-  (define (the-empty-termlist) '())
-  (define (first-term term-list) (car term-list))
-  (define (rest-terms term-list) (cdr term-list))
-  (define (empty-termlist? term-list) (null? term-list))
-  (define (make-term order coeff) (list order coeff))
-  (define (order term) (car term))
-  (define (coeff term) (cadr term))
 
   ;; add and multi
   (define (add-poly p1 p2)
@@ -80,7 +72,7 @@
 
   ; ex2.87
   (define (=zero-poly? p)
-        (empty-termlist? (term-list p))
+    (empty-termlist? (term-list p))
     )
 
   (put '=zero? '(polynomial) =zero-poly?)
@@ -88,8 +80,11 @@
   ; ex2.88
   ; note the key to make this work is to define negate as a generic operation (on other data types).
   ; this is what makes the 'recursive call' eventually terminate.
+  ; ex2.90 interestingly, the solution I wrote for ex2.88 doesn't work with ex2.90 (2 representations for term list).
+  ; The way `map` is used here assumes `term-list` is a list of terms. But it shouldn't have to assume anything about the structure of `term-list`.
+  ; (make-poly (variable p) (map (lambda (term) (make-term (order term) (negate (coeff term)))) (term-list p)))
   (define (negate-poly p)
-    (make-poly (variable p) (map (lambda (term) (make-term (order term) (negate (coeff term)))) (term-list p)))
+    (make-poly (variable p) (negate (term-list p)))
     )
 
   (put 'negate '(polynomial) (lambda (p) (tag (negate-poly p))))
@@ -103,3 +98,12 @@
 (define (make-polynomial var terms)
   ((get 'make 'polynomial) var terms))
 
+
+(define (make-polynomial-sparse var terms)
+  (
+    make-polynomial var (make-termlist-sparse terms)
+    ))
+(define (make-polynomial-dense var terms)
+  (
+    make-polynomial var (make-termlist-dense terms)
+    ))

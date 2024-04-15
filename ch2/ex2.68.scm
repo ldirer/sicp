@@ -43,3 +43,6 @@
 
 (decode (encode '(a d a b b c a) sample-tree) sample-tree)
 ; expected: (a d a b b c a)
+
+(element-of-set? 'a (list 'a 'b 'c))
+(element-of-set? 'a (list 'b 'c))
