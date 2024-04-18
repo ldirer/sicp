@@ -1,6 +1,7 @@
 (define (check-equal test-name actual expected)
   (if (equal? actual expected)
     (begin
+      (display "\n")
       (display "test passed: ")
       (display test-name)
       (display "\n")
