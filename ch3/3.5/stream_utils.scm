@@ -12,3 +12,25 @@
 (define integers
   (cons-stream 1 (add-streams ones integers)))
 
+(define (stream-from-list lst)
+  (if (null? lst)
+    the-empty-stream
+    (cons-stream (car lst) (stream-from-list (cdr lst)))
+    )
+  )
+
+
+(define (display-stream-inline s)
+  (define (iter s)
+    (if (stream-null? s)
+      (newline)
+      (begin
+        (display (stream-car s))
+        (display " ")
+        (iter (stream-cdr s))
+        )
+      )
+    )
+  (newline)
+  (iter s)
+  )
