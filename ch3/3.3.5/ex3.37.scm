@@ -1,0 +1,43 @@
+(load "ch3/3.3.5/constraint.scm")
+(load "ch3/3.3.5/connector.scm")
+
+
+(define (celsius-fahrenheit-converter x)
+  (c+ (c* (c/ (cv 9) (cv 5))
+        x)
+    (cv 32)))
+
+
+(define (c+ x y)
+  (let ((z (make-connector)))
+    (adder x y z)
+    z)
+  )
+(define (c- x y)
+  (let ((z (make-connector)))
+    (adder z y x)
+    z)
+  )
+
+(define (c* x y)
+  (let ((z (make-connector)))
+    (multiplier x y z)
+    z)
+  )
+(define (c/ x y)
+  (let ((z (make-connector)))
+    (multiplier y z x)
+    z)
+  )
+(define (cv value)
+  (let ((z (make-connector)))
+    (constant value z)
+    z)
+  )
+
+(define C (make-connector))
+(define F (celsius-fahrenheit-converter C))
+
+(set-value! C 30 'user)
+(get-value F)
+; expected: 86 (30°C = 86°F)

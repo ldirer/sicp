@@ -1,0 +1,10 @@
+(define (eval-series s x n-terms)
+  (define (iter s i-term)
+    (if (= n-terms i-term)
+      0
+      (+ (* (stream-car s) (expt x i-term)) (iter (stream-cdr s) (+ i-term 1)))
+      )
+    )
+  ;making the index a float so we get a float result (instead of a very large fraction)
+  (iter s 0.)
+  )

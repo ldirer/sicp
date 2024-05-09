@@ -1,0 +1,2 @@
+; computing the n-th fibonnaci number using the 'add-streams' procedure requires n additions
+; Without the memoization, computing the n-th number would require 1 addition + the number of additions to compute the (n - 1)th number + the number of additions to compute the (n - 2)th number.
