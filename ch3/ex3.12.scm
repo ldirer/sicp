@@ -1,3 +1,5 @@
+; note it is an error to call append! with an empty list
+; we could make the function work but it would not mutate x anymore, which would make for an inconsistent api.
 (define (append! x y)
   (set-cdr! (last-pair x) y)
   x
