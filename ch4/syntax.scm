@@ -150,6 +150,19 @@
 
 (define (cond->if expr) (expand-clauses (cond-clauses expr)))
 
+(define (cond-arrow-clause? clause)
+  (eq? (car clause) '=>)
+  )
+(define (cond-arrow-clause-recipient clause) (cadr (cond-actions clause)))
+
+(define (let? expr) (tagged-list? expr 'let))
+(define (let-bindings expr) (cadr expr))
+(define (let-body expr) (cddr expr))
+(define (let-binding-name binding) (car binding))
+(define (let-binding-value binding) (cadr binding))
+
+
+(define (let*? expr) (tagged-list? expr 'let*))
 
 (define (expand-clauses clauses)
   (if (null? clauses)
