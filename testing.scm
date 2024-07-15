@@ -5,8 +5,9 @@
       (display "test passed: ")
       (display test-name)
       (display "\n")
+      'success!
       )
-    (error "test failed: expected actual =>" expected actual)
+    (error (string-append "test '" test-name "' failed: expected/actual =>") expected "/" actual)
     )
   )
 
