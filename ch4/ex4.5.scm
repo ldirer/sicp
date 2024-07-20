@@ -5,8 +5,6 @@
 ;(cond ((assoc 'b '((a 1) (b 2))) => cadr)
 ;  (else false))
 
-; TODO: test this once functions can be applied :)
-
 ; Using syntax translation, we would want to generate something like:
 ;
 ;   let evaluated-predicate=(cond-predicate clause)
@@ -15,6 +13,7 @@
 ; At this stage we do not have variables though, so we wouldn't be able to test that.
 ; I thought it would be better with direct evaluation. But we still can't run it fully,
 ; we need 'apply' which is only partially implemented at this stage.
+; I tested conversions manually by executing their output in the Scheme console.
 
 (define (eval-cond expr env)
   (eval-cond-clauses (cond-clauses expr) env)

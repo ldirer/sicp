@@ -51,7 +51,7 @@
 ;Value: (let ((x 3)) (let ((y (+ x 2))) (let ((z (+ x y 5))) (begin (* x z) y))))
 
 (define (install-let*)
-  ; to answer "must we explictly expand letù in terms of non-derived expressions?"
+  ; to answer "must we explictly expand let* in terms of non-derived expressions?"
   ; no, this is sufficient, `eval` will call itself recursively as needed (converting `let` into lambdas, then evaluating lambdas).
   (put 'eval 'let* (lambda (expr env) (eval (let*->nested-lets expr) env)))
   )

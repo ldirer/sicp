@@ -39,6 +39,10 @@
   (tagged-list? expr 'define)
   )
 
+(define (make-definition name value)
+  (list 'define name value)
+  )
+
 ; we handle two forms here:
 ; 1. (define var value)
 ; 2. (define (var parameter1 parameter2 ..) <body>)
@@ -160,6 +164,15 @@
 (define (let-body expr) (cddr expr))
 (define (let-binding-name binding) (car binding))
 (define (let-binding-value binding) (cadr binding))
+
+
+(define (make-let bindings body)
+  (cons 'let (cons bindings body))
+  )
+
+(define (make-let-binding name value)
+  (list name value)
+  )
 
 
 (define (let*? expr) (tagged-list? expr 'let*))
