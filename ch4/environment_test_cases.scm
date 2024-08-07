@@ -6,7 +6,12 @@
 (define env (extend-environment '() '() the-empty-environment))
 (define env-2-deep (extend-environment (list 'a 'c) (list "a in env-2-deep" "c in env-2-deep") env))
 
+(define-variable! 'd "d" env)
+(check-equal "lookup newly-defined variable" (lookup-variable-value 'd env) "d")
+
 (define-variable! 'b "b" env)
+(check-equal "sanity-check we can define a second new variable" (lookup-variable-value 'b env) "b")
+
 ;(define (define-variable! var value env)
 ;(set-variable-value! var value env)
 (check-equal "lookup variable in current env" (lookup-variable-value 'a env-2-deep) "a in env-2-deep")

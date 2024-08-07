@@ -50,7 +50,7 @@
   (if (symbol? (cadr expr))
     (cadr expr)
     ; else clause handles function definition
-    (caddr expr)
+    (caadr expr)
     )
   )
 (define (definition-value expr)

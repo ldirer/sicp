@@ -12,10 +12,6 @@
 
 
 (define (eval-if expr env)
-  (display "eval-if")
-  (display "\n")
-  (display expr)
-  (display "\n")
   (if
     (true? (eval (if-predicate expr) env))
     (eval (if-consequent expr) env)

@@ -1,13 +1,4 @@
 ;code from section 4.1.3
-(define (apply-primitive-procedure proc args)
-  ;  todo
-  '()
-  )
-
-(define (primitive-procedure? proc)
-  ;  todo
-  '()
-  )
 
 
 (define (make-procedure parameters body env)
@@ -18,7 +9,7 @@
   (tagged-list? p 'procedure))
 
 (define (procedure-parameters p) (cadr p))
-(define (procedure-body p) (cadr p))
+(define (procedure-body p) (caddr p))
 (define (procedure-environment p) (cadddr p))
 
 
@@ -62,8 +53,9 @@
       (cond
         ((null? vars) (add-binding-to-frame! var value frame))
         ((eq? var (car vars)) (set-car! vals value))
-        (else scan (cdr vars) (cdr vals))
-        ))
+        (else (scan (cdr vars) (cdr vals)))
+        )
+      )
 
     (scan (frame-variables frame) (frame-values frame))
     )

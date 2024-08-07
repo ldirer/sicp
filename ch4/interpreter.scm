@@ -23,6 +23,9 @@
   )
 
 
+; save underlying apply before it gets overwritten
+(define apply-in-underlying-scheme apply)
+
 (define (apply procedure arguments)
   (cond
     ((primitive-procedure? procedure)
