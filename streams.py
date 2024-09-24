@@ -63,3 +63,6 @@ print("actual:", evaluate(cosine(), math.pi / 4))
 
 print("expected:", math.sqrt(3) / 2)
 print("actual:", evaluate(cosine(), math.pi / 6))
+
+
+# could also start with the "ones" stream as in SICP. Adding streams, etc.

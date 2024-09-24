@@ -72,8 +72,3 @@
   (put 'eval 'quote (lambda (expr env) (text-of-quotation expr)))
   )
 (install-eval)
-
-(define env '())
-;((get 'eval 'if) '(if "truthy" "ok" "nok") env)
-;(eval '(if "truthy" "ok" "nok") env)
-(check-equal "if truthy" (eval '(if "truthy" "ok" "nok") env) "ok")

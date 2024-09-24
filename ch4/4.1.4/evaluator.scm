@@ -1,5 +1,6 @@
 (load "ch4/environment.scm")
 (load "ch4/syntax.scm")
+(load "ch4/interpreter_preload.scm")
 (load "ch4/interpreter.scm")
 
 (define (setup-environment)
@@ -27,8 +28,12 @@
     (list 'null? null?)
     ; added compared to the book
     ; apply is required to implement map?
+    ; -> a bit confused by this, with imports `apply` might not be the builtin one but our custom function
     (list 'apply apply)
     (list '+ +)
+    (list '* *)
+    (list '- -)
+    (list '/ /)
     ; Louis Reasoner's mistake is to add map as a primitive here (does not work as expected!)
     (list 'map map)
     )

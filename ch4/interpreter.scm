@@ -1,3 +1,4 @@
+(load "ch4/interpreter_preload.scm")
 (load "ch4/interpreter_rules.scm")
 
 ; eval/apply
@@ -8,6 +9,8 @@
     ((quoted? expr) (text-of-quotation expr))
     ((assignment? expr) (eval-assignment expr env))
     ((definition? expr) (eval-definition expr env))
+    ((let? expr) (eval-let expr env))
+    ((letrec? expr) (eval-letrec expr env))
     ((if? expr) (eval-if expr env))
     ((lambda? expr) (make-procedure (lambda-parameters expr) (lambda-body expr) env))
     ((begin? expr) (eval-sequence (begin-actions expr) env))
@@ -23,8 +26,6 @@
   )
 
 
-; save underlying apply before it gets overwritten
-(define apply-in-underlying-scheme apply)
 
 (define (apply procedure arguments)
   (cond

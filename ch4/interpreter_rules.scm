@@ -53,3 +53,30 @@
 
 (define (true? x) (not (eq? x false)))
 (define (false? x) (eq? x false))
+
+
+; copied from ex4.6
+(define (let->combination expr)
+  (define variables (map let-binding-name (let-bindings expr)))
+  (define variable-values (map let-binding-value (let-bindings expr)))
+  (define body (let-body expr))
+  (cons (make-lambda variables body) variable-values)
+  )
+
+(define (eval-let expr env) (eval (let->combination expr) env))
+
+; copied from ex4.20
+(define (letrec->let expr)
+  (define bindings (letrec-bindings expr))
+  (define body (letrec-body expr))
+
+  (define binding-names (map letrec-binding-name bindings))
+  (define binding-values (map letrec-binding-value bindings))
+
+  (define let-bindings (map (lambda (binding) (make-let-binding (letrec-binding-name binding) ''*unassigned*)) bindings))
+  (define assignments (map (lambda (binding) (make-assignment (letrec-binding-name binding) (letrec-binding-value binding))) bindings))
+
+  (make-let let-bindings (append assignments body))
+  )
+
+(define (eval-letrec expr env) (eval (letrec->let expr) env))

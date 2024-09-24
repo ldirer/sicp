@@ -35,6 +35,10 @@
 (define (assignment-variable expr) (cadr expr))
 (define (assignment-value expr) (caddr expr))
 
+(define (make-assignment variable value)
+  (list 'set! variable value)
+  )
+
 (define (definition? expr)
   (tagged-list? expr 'define)
   )
@@ -164,6 +168,13 @@
 (define (let-body expr) (cddr expr))
 (define (let-binding-name binding) (car binding))
 (define (let-binding-value binding) (cadr binding))
+
+
+(define (letrec? expr) (tagged-list? expr 'letrec))
+(define (letrec-bindings expr) (cadr expr))
+(define (letrec-body expr) (cddr expr))
+(define (letrec-binding-name binding) (car binding))
+(define (letrec-binding-value binding) (cadr binding))
 
 
 (define (make-let bindings body)
