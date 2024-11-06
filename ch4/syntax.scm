@@ -1,3 +1,5 @@
+(load "ch4/tagged_list.scm")
+
 (define (self-evaluating? expr)
   (cond
     ((number? expr) true)
@@ -20,13 +22,6 @@
 
 (define (text-of-quotation expr) (cadr expr))
 
-;reminder: a list is a pair. (pair? my-list) is `true`.
-(define (tagged-list? expr tag)
-  (if (pair? expr)
-    (eq? (car expr) tag)
-    false
-    )
-  )
 
 (define (assignment? expr)
   (tagged-list? expr 'set!)

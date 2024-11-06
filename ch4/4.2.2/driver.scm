@@ -18,7 +18,7 @@
   (define (loop)
     (prompt-for-input input-prompt)
     (let ((input (read)))
-      (let ((output (eval input the-global-environment)))
+      (let ((output (actual-value input the-global-environment)))
         (announce-output output-prompt)
         (user-print output)))
     (loop)
@@ -42,6 +42,10 @@
 
 
 (define (user-print object)
+  ; the code guarantees we never get here with `object` a `thunk`.
+  ; otherwise we'd need to adjust, because we can't `display` our environment objects (may contain circular references).
+  ; ex circular reference: whenever a procedure is defined, the value of the procedure will contain a reference
+  ; to the environment where it is defined, that's a loop.
   (if (compound-procedure? object)
     (display (list 'compound-procedure
                    (procedure-parameters object)

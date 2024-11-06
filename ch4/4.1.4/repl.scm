@@ -1,3 +1,4 @@
+(load "ch4/4.1.4/evaluator.scm")
 (load "ch4/4.1.4/driver.scm")
 
 (define the-global-environment (setup-environment))
