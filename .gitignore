@@ -1,3 +1,7 @@
 sicp.pdf
 .idea/
 lambda_tutorial.pdf
+
+*.hi
+*.o
+ch4/4.2.2/ex4.30_side_effects

@@ -23,7 +23,7 @@ count
 ; (define w (id (id 10))) runs (id (id 10)) first, as (id <SOME CALCULATION FOR LATER>).
 ; It enters the body, doing count += 1. Then it needs the value, so it looks at the thunk stored calculation: (id 10)
 ; At this stage it returns *the thunk*: w is a thunk.
-; it is only forced when we display it.
+; it is only forced when we output it.
 ; We can make things clearer with a different setup. Note that using `display` is not possible here out of the box.
 ; We could add it as a primitive procedure, but since these are all strict in their arguments, calling it would change behavior.
 
