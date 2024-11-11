@@ -32,12 +32,16 @@
     (list '* *)
     (list '- -)
     (list '/ /)
+    (list '= =)
     (list '< <)
     (list '<= <=)
     (list '> >)
     (list '>= >=)
+    (list 'modulo modulo)
     (list 'display display)
     (list 'newline newline)
+    ; a custom load function to make it easier to run programs with a custom interpreter
+    (list 'load load-inside-interpreter)
     ; Louis Reasoner's mistake is to add map as a primitive here (does not work as expected!)
     ; We could do it with a custom `map` definition that handles our typed objects.
 ;    (list 'map map)
@@ -55,3 +59,15 @@
 (define (apply-primitive-procedure proc args)
   (apply-in-underlying-scheme (primitive-implementation proc) args)
   )
+
+
+(define (load-inside-interpreter filename)
+  (let ((input-port (open-input-file filename)))
+    (let loop ((expr (read input-port)))
+      (if (eof-object? expr)
+          (begin
+            (close-input-port input-port)
+            'done)  ; Return 'done' when the file is fully processed
+          (begin
+            (eval expr the-global-environment)         ; this relies on this variable being defined by the REPL
+            (loop (read input-port)))))))  ; Read and evaluate the next expression

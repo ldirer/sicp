@@ -6,5 +6,6 @@
 (actual-value 'undefined-variable test-env)
 
 (eval '(define (unless condition usual exceptional) (if condition exceptional usual)) test-env)
-(display (delay-it 'unless test-env))
+; cannot display this, infinite cycle in display.
+;(display (delay-it 'unless test-env))
 
