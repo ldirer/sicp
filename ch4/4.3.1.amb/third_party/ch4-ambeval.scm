@@ -295,8 +295,28 @@
         (list 'modulo modulo)
         (list 'display display)
         (list 'newline newline)
+        (list 'runtime runtime)
+        (list 'and and-func)
+        (list 'or or-func)
+        (list 'apply apply)
 ;        load can't work, it calls 'eval'
 ;        (list 'load load-inside-interpreter)
         ))
+
+; we need functions for 'and/or' if we want to add them as primitives (functions and not special forms)
+; they would be better as special forms for short circuit evaluation but we did not handle them.
+(define (and-func a b)
+  (if a b #f)
+  )
+(define (or-func-binary a b)
+  (if a #t b)
+  )
+
+(define (or-func a b . args)
+  (if (null? args)
+    (or-func-binary a b)
+    (apply-in-underlying-scheme or-func (or-func-binary a b) (car args) (cdr args))
+    )
+  )
 
 'AMB-EVALUATOR-LOADED
