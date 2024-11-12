@@ -45,6 +45,7 @@
     ; Louis Reasoner's mistake is to add map as a primitive here (does not work as expected!)
     ; We could do it with a custom `map` definition that handles our typed objects.
 ;    (list 'map map)
+    (list 'not not)
     )
   )
 

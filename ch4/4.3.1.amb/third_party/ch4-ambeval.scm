@@ -1,4 +1,5 @@
-;https://github.com/boothj5/sicp-code/blob/master/ch4-ambeval.scm
+; https://github.com/boothj5/sicp-code/blob/master/ch4-ambeval.scm
+; I only modified the 'load' call, added primitives and changed the primitives object to a function to make it work with my implementation.
 ;;;;AMB EVALUATOR FROM SECTION 4.3 OF
 ;;;; STRUCTURE AND INTERPRETATION OF COMPUTER PROGRAMS
 
@@ -267,7 +268,7 @@
 ;;  support for Prime?); integer? and sqrt for exercise code;
 ;;  eq? for ex. solution
 
-(define primitive-procedures
+(define (get-primitive-procedures)
   (list (list 'car car)
         (list 'cdr cdr)
         (list 'cons cons)
@@ -288,6 +289,14 @@
         (list 'sqrt sqrt)
         (list 'eq? eq?)
 ;;      more primitives
+        (list '< <)
+        (list '<= <=)
+        (list '/ /)
+        (list 'modulo modulo)
+        (list 'display display)
+        (list 'newline newline)
+;        load can't work, it calls 'eval'
+;        (list 'load load-inside-interpreter)
         ))
 
 'AMB-EVALUATOR-LOADED

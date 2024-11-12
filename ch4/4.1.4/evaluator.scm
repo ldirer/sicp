@@ -1,4 +1,3 @@
-(load "ch4/interpreter_preload.scm")
 (load "ch4/environment.scm")
 (load "ch4/syntax.scm")
 (load "ch4/interpreter.scm")
