@@ -299,8 +299,11 @@
         (list 'and and-func)
         (list 'or or-func)
         (list 'apply apply)
-;        load can't work, it calls 'eval'
-;        (list 'load load-inside-interpreter)
+        (list 'load load-inside-ambeval)
+        (list 'pp pp)
+        (list 'list? list?)
+        (list 'random random)
+        (list 'length length)
         ))
 
 ; we need functions for 'and/or' if we want to add them as primitives (functions and not special forms)
@@ -318,5 +321,17 @@
     (apply-in-underlying-scheme or-func (or-func-binary a b) (car args) (cdr args))
     )
   )
+
+
+(define (load-inside-ambeval filename)
+  (let ((input-port (open-input-file filename)))
+    (let loop ((expr (read input-port)))
+      (if (eof-object? expr)
+        (begin
+          (close-input-port input-port)
+          'done)
+        (begin
+          (ambeval expr the-global-environment (lambda args '()) (lambda args '()))
+          (loop (read input-port)))))))  ; Read and evaluate the next expression
 
 'AMB-EVALUATOR-LOADED
