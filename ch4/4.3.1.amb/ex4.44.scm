@@ -1,3 +1,6 @@
+; use amb
+
+(define (cddr items) (cdr (cdr items)))
 (define (filter proc items)
   (cond ((null? items) '())
     ((proc (car items)) (cons (car items) (filter proc (cdr items))))
@@ -31,12 +34,17 @@
            (other-positions (cdr positions))
            (row (get-row (car positions)))
            )
-      (null?
-        (filter
-          (lambda (position) (conflict-pos? position row k))
-          other-positions
-          )
+      (cond
+        ((null? other-positions) true)
+        ((conflict-pos? (car other-positions) row k) false)
+        (else (safe? k (cons (car positions) (cddr positions))))
         )
+;      (null?
+;        (filter
+;          (lambda (position) (conflict-pos? position row k))
+;          other-positions
+;          )
+;        )
       )
     )
   )
@@ -49,21 +57,37 @@
 ; a position is a pair row col
 ; a solution is a list of positions
 ; 'k' queens left to place on the NxN board (with N=8 here).
-(define (queens k previous-positions)
+(define (queens N k previous-positions)
   (if (= k 0)
     previous-positions
-    (let ((row (an-integer-between 1 8)))
+    (let ((row (an-integer-between 1 N)))
       (let ((new-positions (cons (make-position row k) previous-positions)))
         (require (safe? k new-positions))
-        (queens (- k 1) new-positions)
+        (queens N (- k 1) new-positions)
         )
       )
     )
   )
 
-(queens 8 '())
+
+(define start-time (runtime))
+(queens 10 10 '())
+; uh these display/newline don't work exactly as expected because this runs in the ambeval interpreter :)
+; Good enough though!
+(newline)
+(display "elapsed time: ")
+(display (- (runtime) start-time))
+(display "s")
+(newline)
 ;;;; Amb-Eval input:
 ;(queens 8 '())
 ;;;; Starting a new problem
 ;;;; Amb-Eval value:
 ;((4 . 1) (2 . 2) (7 . 3) (3 . 4) (6 . 5) (8 . 6) (5 . 7) (1 . 8))
+
+
+; queens 10
+; ;;; Starting a new problem 1.52
+; queens 15
+; ;;; Starting a new problem 44.97
+; To be fair I'm only running *until the first solution*. This is not the same as finding all solutions!
