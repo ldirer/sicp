@@ -1,2 +1,2 @@
-(load "ch4/4.1.7/analyze.scm")
-(define (eval exp env) ((analyze exp) env))
+(load "ch4/4.3.3.amb/analyze.scm")
+(define (ambeval exp env succeed fail) ((analyze exp) env succeed fail))
