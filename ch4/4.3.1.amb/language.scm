@@ -68,6 +68,3 @@
     )
   (maybe-extend (parse-simple-noun-phrase))
   )
-
-
-(parse '(the student with the cat sleeps in the class))

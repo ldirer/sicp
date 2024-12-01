@@ -3,20 +3,27 @@
 
 (define (cadr a) (car (cdr a)))
 (define (cddr a) (cdr (cdr a)))
+(define (caddr a) (car (cddr a)))
 
-; > She reasons that by simply changing the procedure `parse-word` so that it ignores the "input sentence"
-; > and instead always succeeds and generates an appropriate word, we can use the programs
-; > we had built for parsing to do generation instead.
 (define (parse-word word-list)
   ; reminder that word-list is (word-type ...words)
   ; ignore the input ('*unparsed') and just generate words
-  (define drawn (random-in-list (cdr word-list)))
-  (amb
-    (list (car word-list) drawn)
-    (parse-word word-list)
-    )
-  )
 
+  ; original approach - without apply
+;  (define (helper words)
+;    (if (null? words)
+;      (ramb)
+;      ; this is not great! ramb here will take the first word with a 50% probability
+;      ; I added apply to my analyzer because I don't know how to do without it.
+;       (ramb (car words) (helper (cdr words)))
+;      )
+;    )
+;  (cons (car word-list) (helper (cdr word-list)))
+
+  ; I think my apply is fundamentally broken BUT it does the job for this particular piece of code.
+  ; Calling _that_ a success :).
+  (list (car word-list) (apply ramb (cdr word-list)))
+  )
 
 (define (random-in-list items)
   ; NOTE THAT 'random' STARTS WITH THE EXACT SAME SEED EVERY TIME THE INTERPRETER IS RESTARTED.
@@ -64,37 +71,56 @@
         (collect-words (cdr sentence))
         )
       )
-;    (else (list (car sentence)))
+    ;    (else (list (car sentence)))
     (else (list "thought unreachable!"))
     )
   )
+(define (range low high)
+  (if (>= low high)
+    '()
+    (cons low (range (+ low 1) high))
+    )
+  )
 
-;
+
+(define sentences (map (lambda (item) (collect-words (parse '()))) (range 0 100)))
+
+(define first-picked-nouns (map (lambda (sentence) (cadr sentence)) sentences))
+
+(define (count item items)
+  (cond
+    ((null? items) 0)
+    ((eq? item (car items)) (+ (count item (cdr items)) 1))
+    (else (count item (cdr items)))
+    )
+  )
+
+(define (pick-probability noun)
+  (/ (count noun first-picked-nouns) (length first-picked-nouns))
+  )
+
+(pick-probability 'student)
+; Hopefully close to (/ 1 (length nouns)). Experimentally: yes.
+
 (parse '())
-try-again
+(collect-words (parse '()))
 try-again
 try-again
 try-again
 (collect-words (parse '()))
 try-again
 try-again
-;(a cat lectures in a cat by a coat)
-try-again
-;(a cat lectures in a cat by a coat by a professor)
-try-again
-;(a cat lectures in a cat by a coat by a professor to a professor)
-try-again
-try-again
-try-again
-try-again
+(collect-words (parse '()))
 try-again
 try-again
 
-;It's clear that we will not produce anything interesting.
-; One thing that people online did is use a dummy input.
-; (https://www.inchmeal.io/sicp/ch-4/ex-4.49.html and https://eli.thegreenplace.net/2008/01/05/sicp-section-432)
-; this limits the size of the sentence, which in turns forces the generator to 'explore' new sentences.
+(collect-words (parse '()))
+(collect-words (parse '()))
+try-again
 
-; At first I didn't use a random choice. I just picked the first valid word.
-;;(the student studies for the student for the student for the student for the student for the student for the student)
-;; well this is not great.
+; samples:
+; (the coat eats in a student to a student to the professor)
+; (the student eats with the student for the class)
+; (a professor eats with the professor to the coat)
+; (a coat lectures with the cat)
+; A little underwhelming, I'll say.

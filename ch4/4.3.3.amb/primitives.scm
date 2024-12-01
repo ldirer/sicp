@@ -66,7 +66,7 @@
       (if (eof-object? expr)
         (begin
           (close-input-port input-port)
-          'done)
+          'done-loading-file)
         (begin
           (ambeval expr the-global-environment (lambda args '()) (lambda args '()))
           (loop (read input-port)))))))  ; Read and evaluate the next expression

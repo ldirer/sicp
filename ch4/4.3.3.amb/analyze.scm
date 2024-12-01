@@ -2,7 +2,8 @@
 (load "ch4/syntax.scm")
 (load "ch4/environment.scm")
 (load "ch4/interpreter_rules.scm")
-(load "ch4/4.1.7/ex4.22.scm")
+(load "ch4/4.3.3.amb/ex4.50.scm")
+(load "ch4/4.3.3.amb/dangerous_apply.scm")
 
 
 (define (amb? exp) (tagged-list? exp 'amb))
@@ -31,9 +32,15 @@
 
 (define (analyze exp)
   (cond ((self-evaluating? exp) (analyze-self-evaluating exp))
+    ; it's weird to make apply a special form like this.
+    ; But I want to use it with ramb which I think means this is the only way.
+    ((apply? exp) (analyze-apply exp))
+    ((already-evaluated? exp) (analyze-already-evaluated exp))
     ((amb? exp) (analyze-amb exp))
+    ((ramb? exp) (analyze-ramb exp))
     ((quoted? exp) (analyze-quoted exp))
     ((variable? exp) (analyze-variable exp))
+    ((let? exp) (analyze (let->combination exp)))
     ((assignment? exp) (analyze-assignment exp))
     ((definition? exp) (analyze-definition exp))
     ((if? exp) (analyze-if exp))
@@ -65,20 +72,17 @@
 
 
 (define (analyze-assignment exp)
-  (let ((var (assignment-variable expr))
-         (val (analyze (assignment-value expr)))
+  (let ((var (assignment-variable exp))
+         (vproc (analyze (assignment-value exp)))
          )
     (lambda (env succeed fail)
-      (val env
+      (vproc
+        env
         (lambda (new-value fail2)
           (let ((old-value (lookup-variable-value var env)))
-            (set-variable-value!
-              var
-              new-value
-              env
-              )
+            (set-variable-value! var new-value env)
             ; if there's a failure later on, set the value back to the saved one
-            (succeed 'ok (lambda () ((set-variable-value! var old-value env) (fail2))))
+            (succeed 'ok (lambda () (set-variable-value! var old-value env) (fail2)))
             )
           )
         fail
@@ -96,17 +100,15 @@
          )
 
     (lambda (env succeed fail)
-      (
-        (pproc env
-          ; success continuation - on succesful predicate value computation
-          (lambda (pred-value fail2)
-            (if (true? pred-value)
-              (cproc env succeed fail2)
-              (aproc env succeed fail2)
-              )
+      (pproc env
+        ; success continuation - on succesful predicate value computation
+        (lambda (pred-value fail2)
+          (if (true? pred-value)
+            (cproc env succeed fail2)
+            (aproc env succeed fail2)
             )
-          fail
           )
+        fail
         )
       )
     )
