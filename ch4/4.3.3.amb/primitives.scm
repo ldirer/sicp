@@ -41,6 +41,7 @@
         (list 'list? list?)
         (list 'random random)
         (list 'length length)
+        (list 'even? even?)
     ))
 
 ; we need functions for 'and/or' if we want to add them as primitives (functions and not special forms)

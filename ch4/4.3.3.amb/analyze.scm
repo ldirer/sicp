@@ -4,6 +4,9 @@
 (load "ch4/interpreter_rules.scm")
 (load "ch4/4.3.3.amb/ex4.50.scm")
 (load "ch4/4.3.3.amb/dangerous_apply.scm")
+(load "ch4/4.3.3.amb/ex4.51_permanent_assignment.scm")
+(load "ch4/4.3.3.amb/ex4.52_if_fail.scm")
+(load "ch4/4.3.3.amb/ex4.54_require_special.scm")
 
 
 (define (amb? exp) (tagged-list? exp 'amb))
@@ -42,8 +45,11 @@
     ((variable? exp) (analyze-variable exp))
     ((let? exp) (analyze (let->combination exp)))
     ((assignment? exp) (analyze-assignment exp))
+    ((require-special? exp) (analyze-require-special exp))
+    ((permanent-assignment? exp) (analyze-permanent-assignment exp))
     ((definition? exp) (analyze-definition exp))
     ((if? exp) (analyze-if exp))
+    ((if-fail? exp) (analyze-if-fail exp))
     ((let? exp) (analyze-let exp))
     ((lambda? exp) (analyze-lambda exp))
     ((begin? exp) (analyze-sequence (begin-actions exp)))
@@ -96,7 +102,6 @@
   (let ((pproc (analyze (if-predicate exp)))
          (cproc (analyze (if-consequent exp)))
          (aproc (analyze (if-alternative exp)))
-         (condition-succeed (lambda (value fail) value))
          )
 
     (lambda (env succeed fail)
