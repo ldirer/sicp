@@ -197,12 +197,14 @@
                        (conclusion clean-rule)
                        query-frame)))
     (if (or (eq? unify-match 'failed)
+            ; relevant
             (processed-query? query-pattern unify-match history))
         the-empty-stream
         (qeval (rule-body clean-rule)
                (singleton-stream unify-match)
                (extend-history query-pattern unify-match history)))))
 
+; relevant
 (define (processed-query? query frame hist)
   (if (empty-history? hist)
       #f
@@ -216,6 +218,7 @@
                                  unify-match))
             (processed-query? query frame (rest-history hist))))))
 
+; relevant
 (define (still-unbound? vars frame)
   (or (null? vars)
       (and (free-var? (car vars) frame)
@@ -457,6 +460,7 @@
 (define (extend variable value frame)
   (cons (make-binding variable value) frame))
 
+; relevant
 (define empty-history '())
 (define (empty-history? h) (eq? h empty-history))
 (define (freevars pat result)

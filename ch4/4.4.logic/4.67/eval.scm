@@ -32,26 +32,6 @@
 
 (define (simple-query query-pattern frame-stream)
 
-
-  (define (loop-detector frame)
-    (define frames-history (lookup-history query-pattern))
-
-    )
-
-
-  (define (logger frame)
-    (if *DEBUG*
-      (begin
-        (display "simple-query frame for pattern ")
-        (display query-pattern)
-        (display " : ")
-        (display frame)
-        (newline)
-        )
-      )
-    frame
-    )
-
   (stream-flatmap
     (lambda (frame)
       (stream-append-delayed
