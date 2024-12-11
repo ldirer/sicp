@@ -9,6 +9,7 @@
       ; admittedly it's weird to do this here as if we were manipulating a query (syntax transformed too!)
       ; this is just a quick convenience addition.
       ((load? q) (load-inside-logic-interpreter (load-filename q)))
+      ((debug? q) (toggle-debug))
       ((assertion-to-be-added? q)
         (add-rule-or-assertion! (add-assertion-body q))
         (newline)

@@ -15,6 +15,9 @@
       (interleave-delayed
         (force delayed-s2)
         (delay (stream-cdr s1))
+        ; experiment removing the interleaving part:
+;                (stream-cdr s1)
+;                delayed-s2
         )
       )
     )

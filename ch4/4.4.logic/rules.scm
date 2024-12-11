@@ -39,9 +39,6 @@
 
 
 (define (unify-match p1 p2 frame)
-  (display "pattern-match, pat=")
-  (display pat)
-  (newline)
   (cond
     ((eq? frame 'failed) 'failed)
     ((equal? p1 p2) frame)

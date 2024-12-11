@@ -65,9 +65,9 @@
 
 ; Very elegant.
 (define (pattern-match pat dat frame)
-  (display "pattern-match, pat=")
-  (display pat)
-  (newline)
+;  (display "pattern-match, pat=")
+;  (display pat)
+;  (newline)
   (cond
     ((eq? frame 'failed) 'failed)
     ((equal? pat dat) frame)
