@@ -129,6 +129,9 @@
 (define (lisp-value call frame-stream)
   (stream-flatmap
     (lambda (frame)
+;      (newline)
+;      (display "lisp-value for frame: ")
+;      (display frame)
       (if (execute
             (instantiate call frame (lambda (v f) (error "Unknown pat var -- LIST-VALUE" v)))
             )

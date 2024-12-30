@@ -213,7 +213,17 @@
               (unify-match query
                            (history-query h)
                            frame)))
+;        (display "unify-match ")
+;        (display query)
+;        (display " ")
+;        (display (history-query h))
+;        (display " ")
+;        (display frame)
+;        (display " : ")
+;        (display unify-match)
+;        (newline)
         (or (and (not (eq? unify-match 'failed))
+                  ; this seems to be #t, always. Due to what I can only assume is a bug.
                  (still-unbound? (history-freevars h)
                                  unify-match))
             (processed-query? query frame (rest-history hist))))))

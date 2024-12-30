@@ -1,11 +1,21 @@
 (load "ch4/4.4.logic/data_jobs.scm")
 
-;should not raise an error (no rules here)
+;(debug-logic)
+;should not trigger loop detection (no rules here)
 (or (supervisor (Bitdiddle Ben) ?who) (supervisor (Bitdiddle Ben) ?who))
 
 
-; should not raise an error
+; should not trigger loop detection
 (or (outranked-by (Bitdiddle Ben) ?who) (outranked-by (Bitdiddle Ben) ?who))
+
+; should trigger loop detection and not loop indefinitely
+(assert!
+  (rule (loopy ?staff-person)
+    (loopy ?staff-person)
+    )
+  )
+
+;(loopy (Bitdiddle Ben))
 
 ; broken rule from ex4.64
 (assert!
@@ -20,5 +30,16 @@
     )
   )
 
-; should raise an error instead of looping indefinitely.
-(outranked-by-wrong (Bitdiddle Ben) ?who)
+;(outranked-by-wrong (Bitdiddle Ben) ?who)
+
+
+;; Loop not detected?
+;(assert!
+;  (rule (loopy-2 ?staff-person)
+;    (and (supervisor ?one ?two)
+;    (loopy-2 ?one))
+;    )
+;  )
+;(loopy-2 (Bitdiddle Ben))
+;
+;

@@ -20,26 +20,26 @@
   )
 
 
-(define (qeval query frame-stream)
+(define (qeval query frame-stream history)
   (let ((qproc (get (type query) 'qeval)))
     (if qproc
-      (qproc (contents query) frame-stream)
-      (simple-query query frame-stream)
+      (qproc (contents query) frame-stream history)
+      (simple-query query frame-stream history)
       )
     )
   )
 
 
-(define (simple-query query-pattern frame-stream)
+(define (simple-query query-pattern frame-stream history)
 
   (stream-flatmap
     (lambda (frame)
       (stream-append-delayed
         (find-assertions query-pattern frame)
-        (delay (apply-rules query-pattern frame))
+        (delay (apply-rules query-pattern frame history))
         )
       )
-    (stream-map logger frame-stream)
+    frame-stream
     )
   )
 
@@ -47,7 +47,7 @@
 ; compound queries
 
 ; and
-(define (conjoin conjuncts frame-stream)
+(define (conjoin conjuncts frame-stream history)
   (define (helper conjuncts frame-stream index)
     (define (maybe-log frame)
       (if (= index 0)
@@ -56,8 +56,8 @@
           (debug-log (first-conjunct conjuncts))
           (debug-log " instantiated frame=")
           (debug-log (instantiate (first-conjunct conjuncts) frame
-                     (lambda (v f)
-                       (contract-question-mark v))))
+                       (lambda (v f)
+                         (contract-question-mark v))))
           (debug-log "\n")
           )
         )
@@ -67,7 +67,7 @@
       frame-stream
       (helper
         (rest-conjuncts conjuncts)
-        (stream-map maybe-log (qeval (first-conjunct conjuncts) frame-stream))
+        (stream-map maybe-log (qeval (first-conjunct conjuncts) frame-stream history))
         (+ index 1)
         )
       )
@@ -77,24 +77,22 @@
 
 
 ; or
-(define (disjoin disjuncts frame-stream)
+(define (disjoin disjuncts frame-stream history)
   (if (empty-disjunction? disjuncts)
     the-empty-stream
     (interleave-delayed
-      (qeval (first-disjunct disjuncts) frame-stream)
-      (delay (disjoin (rest-disjuncts disjuncts) frame-stream))
+      (qeval (first-disjunct disjuncts) frame-stream history)
+      (delay (disjoin (rest-disjuncts disjuncts) frame-stream history))
       )
     )
   )
 
 
 
-; I think we could write this with stream-filter?
-; TODO test it. No reason it wouldn't work imo
-(define (negate operands frame-stream)
+(define (negate operands frame-stream history)
   (stream-flatmap
     (lambda (frame)
-      (if (stream-null? (qeval (negated-query operands) (singleton-stream frame)))
+      (if (stream-null? (qeval (negated-query operands) (singleton-stream frame) history))
         ; no matches for query in the frame, include it. (remember we're evaluating 'not query')
         (singleton-stream frame)
         ; the frame matches the query: filter it out
@@ -106,7 +104,7 @@
   )
 
 
-(define (lisp-value call frame-stream)
+(define (lisp-value call frame-stream history)
   (stream-flatmap
     (lambda (frame)
       (if (execute
@@ -127,7 +125,7 @@
     )
   )
 
-(define (always-true ignore frame-stream) frame-stream)
+(define (always-true ignore frame-stream history) frame-stream)
 
 (put 'lisp-value 'qeval lisp-value)
 (put 'and 'qeval conjoin)

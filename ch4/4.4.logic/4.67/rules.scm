@@ -12,7 +12,7 @@
       (cond
         ((eq? unify-result 'failed) the-empty-stream)
         ((already-processed clean-rule unify-result history)
-          (debug-log "LOOP DETECTED, RETURNING EMPTY STREAM FOR: " unify-result)
+          (debug-log "loop detected, returning empty stream for: " (conclusion clean-rule) " with unified frame " unify-result "\n")
           the-empty-stream
           )
         (else (qeval (rule-body clean-rule) (singleton-stream unify-result) (extend-history (conclusion clean-rule) unify-result history)))
@@ -22,7 +22,7 @@
   )
 
 
-(define (history-instantiate pattern frame) (instantiate pattern frame (lambda (var frame) ?free)))
+(define (history-instantiate pattern frame) (instantiate pattern frame (lambda (var frame) '?free)))
 
 (define (already-processed rule unified-frame history)
   (lookup-history (history-instantiate (conclusion rule) unified-frame) history)
@@ -34,15 +34,17 @@
 (define (rest-history history) (cdr history))
 (define (empty-history history) (null? history))
 (define (lookup-history item history)
+;  (debug-log "looking up item " item " in history " history "\n")
   (cond
     ((empty-history history) #f)
-    ((eq? (first-history history) item) #t)
-    (else (lookup item (rest-history history)))
+    ; comparing lists requires equal? and not eq?. Classic.
+    ((equal? (first-history history) item) #t)
+    (else (lookup-history item (rest-history history)))
     )
   )
 
-(define (apply-rules pattern frame)
-  (stream-flatmap (lambda (rule) (apply-a-rule rule pattern frame))
+(define (apply-rules pattern frame history)
+  (stream-flatmap (lambda (rule) (apply-a-rule rule pattern frame history))
     (fetch-rules pattern frame))
   )
 
