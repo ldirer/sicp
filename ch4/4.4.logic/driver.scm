@@ -26,7 +26,13 @@
                 frame
                 (lambda (v f)
                   (contract-question-mark v))))
-            (qeval q (singleton-stream '()))))
+            ; not great to leak 'control logic' like this, quick solution.
+            (if (active? (get-environment-variable "SICP_LOGIC_INTERPRETER_DELAYED_FILTERING"))
+              (stream-force-evaluate-promises (qeval q (singleton-stream '())))
+              (qeval q (singleton-stream '()))
+              )
+            )
+          )
         )
       )
     )
