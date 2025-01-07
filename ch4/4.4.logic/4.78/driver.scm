@@ -26,11 +26,7 @@
                 frame
                 (lambda (v f)
                   (contract-question-mark v))))
-            ; not great to leak 'control logic' like this, quick solution.
-            (if (active? (get-environment-variable "SICP_LOGIC_INTERPRETER_DELAYED_FILTERING"))
-              (stream-force-evaluate-promises (qeval q (singleton-stream '())))
-              (qeval q (singleton-stream '()))
-              )
+            (qeval q (singleton-stream '()))
             )
           )
         )
@@ -42,27 +38,6 @@
   (prompt-for-input input-prompt)
   (interpret (read))
   (query-driver-loop)
-  ;
-  ;  (let ((q (query-syntax-process (read))))
-  ;    (cond
-  ;      ((assertion-to-be-added? q)
-  ;        (add-rule-or-assertion! (add-assertion-body q))
-  ;        (newline)
-  ;        (display "Assertion added to data base.")
-  ;        (query-driver-loop))
-  ;      (else
-  ;        (newline)
-  ;        (display output-prompt)
-  ;        (display-stream
-  ;          (stream-map
-  ;            (lambda
-  ;              (frame)
-  ;              (instantiate q
-  ;                frame
-  ;                (lambda (v f)
-  ;                  (contract-question-mark v))))
-  ;            (qeval q (singleton-stream '()))))
-  ;        (query-driver-loop))))
   )
 
 ; replace any variables in the expression by their values in a given frame.

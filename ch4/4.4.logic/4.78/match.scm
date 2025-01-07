@@ -20,48 +20,6 @@
     )
   )
 
-; below is an implementation I wrote as I tried to figure things out.
-; - The book's version is SO MUCH NICER.
-; - Also it's SO MUCH MORE CORRECT. With regards to variable values holding variables.
-; data cannot contain variables for this 'simple' pattern matching. Unification is when we allow that.
-
-;; frame: list variable bindings - binding: variable, value
-;; dat: assertion from the db.
-;; Question is: can we bind all variables in the pattern with things in data? Without contradicting frame bindings
-;; -> not sure about all variables
-;(define (pattern-match pat dat frame)
-;  (cond
-;    ((eq? frame 'failed) 'failed)
-;    ((and (null? pat) (null? dat)) frame)
-;    ((or (null? pat) (null? dat)) 'failed)
-;    ((var? (car pat))
-;      ; what about "values can contain variables"? Not sure what that means anymore...
-;      (let ((var-binding (binding-in-frame (cdr (car pat)) frame)))
-;        (cond
-;          ((not var-binding) (pattern-match (cdr pat) (cdr dat) (extend (cdr (car pat)) (car dat) frame)))
-;          ((eq? (binding-value var-binding) (car dat)) (pattern-match (cdr pat) (cdr dat) frame))
-;          (else 'failed)
-;          )
-;        )
-;      )
-;    ; inner list, might contain variables too: recursive call, then proceed with the extended frame (or 'failed!).
-;    ; note we need to test for that *after* testing for variable since they are pairs too!
-;    ((pair? (car pat))
-;      (if (pair? (car dat))
-;        (pattern-match (cdr pat) (cdr dat) (pattern-match (car pat) (car dat) frame))
-;        'failed
-;        )
-;      )
-;    ((constant-symbol? (car pat))
-;      (if (eq? (car pat) (car dat))
-;        (pattern-match (cdr pat) (cdr dat) frame)
-;        'failed
-;        )
-;      )
-;    (else (error "THOUGHT UNREACHABLE OH NO"))
-;    )
-;  )
-
 
 ; Very elegant.
 (define (pattern-match pat dat frame)
