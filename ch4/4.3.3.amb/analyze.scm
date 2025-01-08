@@ -7,6 +7,7 @@
 (load "ch4/4.3.3.amb/ex4.51_permanent_assignment.scm")
 (load "ch4/4.3.3.amb/ex4.52_if_fail.scm")
 (load "ch4/4.3.3.amb/ex4.54_require_special.scm")
+(load "ch4/4.4.logic/4.78/amb_require_fail.scm")
 
 
 (define (amb? exp) (tagged-list? exp 'amb))
@@ -50,6 +51,8 @@
     ((definition? exp) (analyze-definition exp))
     ((if? exp) (analyze-if exp))
     ((if-fail? exp) (analyze-if-fail exp))
+    ; introduced for exercice 4.78
+    ((require-fail? exp) (analyze-require-fail exp))
     ((let? exp) (analyze-let exp))
     ((lambda? exp) (analyze-lambda exp))
     ((begin? exp) (analyze-sequence (begin-actions exp)))

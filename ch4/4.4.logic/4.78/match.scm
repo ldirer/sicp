@@ -2,26 +2,18 @@
 (load "ch4/4.4.logic/frames.scm")
 (load "ch4/4.4.logic/syntax.scm")
 
-; return a stream of frames extending the one passed as argument
 (define (find-assertions pattern frame)
-  (stream-flatmap
-    (lambda (datum)
-      (check-an-assertion datum pattern frame)
-      )
-    (fetch-assertions pattern frame))
+  (define datum (fetch-assertions pattern frame))
+  (check-an-assertion datum pattern frame)
   )
 
 (define (check-an-assertion assertion query-pat query-frame)
   (let ((match-result (pattern-match query-pat assertion query-frame)))
-    (if (eq? match-result 'failed)
-      the-empty-stream
-      (singleton-stream match-result)
-      )
+    (require (not (eq? match-result 'failed)))
+    match-result
     )
   )
 
-
-; Very elegant.
 (define (pattern-match pat dat frame)
   (cond
     ((eq? frame 'failed) 'failed)

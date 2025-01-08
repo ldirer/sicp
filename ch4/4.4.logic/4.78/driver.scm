@@ -3,30 +3,38 @@
 (define output-prompt ";;; Query results:")
 
 
+(define (try-again? exp) (eq? exp 'try-again))
+
+; quick hack to get print statements debugging in file loading...
+(define (display? exp) (eq? (car exp) 'display))
+(define (newline? exp) (eq? (car exp) 'newline))
+
 (define (interpret exp)
-  (let ((q (query-syntax-process exp)))
-    (cond
-      ; admittedly it's weird to do this here as if we were manipulating a query (syntax transformed too!)
-      ; this is just a quick convenience addition.
-      ((load? q) (load-inside-logic-interpreter (load-filename q)))
-      ((debug? q) (toggle-debug))
-      ((assertion-to-be-added? q)
-        (add-rule-or-assertion! (add-assertion-body q))
-        (newline)
-        (display "Assertion added to data base.")
-        )
-      (else
-        (newline)
-        (display output-prompt)
-        (display-stream
-          (stream-map
-            (lambda
-              (frame)
-              (instantiate q
-                frame
-                (lambda (v f)
-                  (contract-question-mark v))))
-            (qeval q (singleton-stream '()))
+;  (display "LOGIC INTERPRETING: ")
+;  (display exp)
+;  (newline)
+  (cond
+    ((try-again? exp) (amb))   ; trigger a 'try again' - needs to be first in cond because the others assume exp is a list.
+    ((display? exp) (display exp))
+    ((newline? exp) (newline))
+    ((load? exp) (load-inside-logic-interpreter (load-filename exp)))
+    ((debug? exp) (toggle-debug))
+    (else
+      (let ((q (query-syntax-process exp)))
+        (cond
+          ((assertion-to-be-added? q)
+            (add-rule-or-assertion! (add-assertion-body q))
+            (newline)
+            (display "Assertion added to data base.")
+            )
+          (else
+            (display output-prompt)
+            (define answer-frame (qeval q '()))
+            (newline)
+            (display (instantiate q answer-frame (lambda (v f) (contract-question-mark v))))
+            ; adding (amb) here is a way to force printing all results.
+            ; then the ambevaluator needs (query-driver-loop) to start a new logic query loop.
+             (amb)
             )
           )
         )
@@ -60,13 +68,16 @@
 
 (define (load-inside-logic-interpreter filename)
   (let ((input-port (open-input-file filename)))
-    (let loop ((expr (read input-port)))
+    ; tiny rewrite to avoid having to support 'let loops' inside the ambeval interpreter.
+    (define (loop expr)
       (if (eof-object? expr)
         (begin
           (close-input-port input-port)
           'done-loading-file)
         (begin
           (interpret expr)
-          (loop (read input-port))))))
+          (loop (read input-port)))))
+    (loop (read input-port))
+    )
   )
 

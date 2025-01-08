@@ -2,9 +2,3 @@
 
 (job ?x (computer wizard))
 
-
-; list of assertions
-; this == ambiguous_assertion
-; amb job_assertions
-
-

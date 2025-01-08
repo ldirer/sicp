@@ -1,41 +1,44 @@
 ; code from section 4.4.4.5 ~p480 paper.
+; ambiguous evaluator version: uses lists instead of streams to store data. I don't think this matters much.
+; Then the interface with the rest of the code uses amb values.
 
-(define THE-ASSERTIONS the-empty-stream)
+(define THE-ASSERTIONS (list))
 
 (define (fetch-assertions pattern frame)
   (if (use-index? pattern)
-    (get-indexed-assertions pattern)
-    (get-all-assertions)
+    (an-element-of (get-indexed-assertions pattern))
+    (an-element-of (get-all-assertions))
     )
   )
 
 (define (get-all-assertions) THE-ASSERTIONS)
 
 (define (get-indexed-assertions pattern)
-  (get-stream (index-key-of pattern) 'assertion-stream))
+  (get-list (index-key-of pattern) 'assertion-list))
 
-(define (get-stream key1 key2)
+(define (get-list key1 key2)
   (let ((s (get key1 key2)))
-    (if s s the-empty-stream)
+    (if s s (list))
     )
   )
 
 ; when fetching rules that might match a pattern whose `car` is a constant symbol we want to
 ; fetch all rules whose conclusions start with a variable as well as
 ; those whose conclusions have the same `car` as the pattern.
-(define THE-RULES the-empty-stream)
+(define THE-RULES (list))
 (define (fetch-rules pattern frame)
   (if (use-index? pattern)
-    (get-indexed-rules pattern)
-    (get-all-rules)
+    (an-element-of (get-indexed-rules pattern))
+    (an-element-of (get-all-rules))
     )
   )
 
 (define (get-all-rules) THE-RULES)
 (define (get-indexed-rules pattern)
-  (stream-append
-    (get-stream (index-key-of pattern) 'rule-stream)
-    (get-stream '? 'rule-stream))
+  (append
+    (get-list (index-key-of pattern) 'rule-list)
+    (get-list '? 'rule-list)
+    )
   )
 
 
@@ -47,29 +50,24 @@
 
 (define (add-assertion! assertion)
   (store-assertion-in-index assertion)
-  (let ((old-assertions THE-ASSERTIONS))
-    (set! THE-ASSERTIONS
-      (cons-stream assertion old-assertions))
-    'ok
-    )
+  (permanent-set! THE-ASSERTIONS (cons assertion THE-ASSERTIONS))
+  'ok
   )
 
 (define (add-rule! rule)
   (store-rule-in-index rule)
-  (let ((old-rules THE-RULES))
-    (set! THE-RULES (cons-stream rule old-rules))
-    'ok
-    )
+  (permanent-set! THE-RULES (cons rule THE-RULES))
+  'ok
   )
 
 (define (store-assertion-in-index assertion)
   (if (indexable? assertion)
     (let ((key (index-key-of assertion)))
-      (let ((current-assertion-stream (get-stream key 'assertion-stream)))
+      (let ((current-assertion-list (get-list key 'assertion-list)))
         (put
           key
-          'assertion-stream
-          (cons-stream assertion current-assertion-stream)
+          'assertion-list
+          (cons assertion current-assertion-list)
           )
         )
       )
@@ -80,11 +78,11 @@
   (let ((pattern (conclusion rule)))
     (if (indexable? pattern)
       (let ((key (index-key-of pattern)))
-        (let ((current-rule-stream (get-stream key 'rule-stream)))
+        (let ((current-rule-list (get-list key 'rule-list)))
           (put
             key
-            'rule-stream
-            (cons-stream rule current-rule-stream)
+            'rule-list
+            (cons rule current-rule-list)
             )
           )
         )

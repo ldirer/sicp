@@ -6,6 +6,13 @@
 ;;  eq? for ex. solution
 
 (define (get-primitive-procedures)
+  ; evaluate is a hack for ex4.78.
+  (define (evaluate expr env)
+    (define return-value 'unset)
+    (ambeval expr env (lambda (value fail) (set! return-value value)) (lambda () (error "ambiguous values not allowed in this context")))
+    return-value
+    )
+
   (list (list 'car car)
         (list 'cdr cdr)
         (list 'cons cons)
@@ -42,6 +49,37 @@
         (list 'random random)
         (list 'length length)
         (list 'even? even?)
+        ; added to try to run the amb-based implementation of the logic interpreter (ex4.78)
+        ; Since the whole logic interpreter code runs within the amb eval interpreter, that's quite a lot of primitives.
+        ; possibly code paths that I haven't triggered in my tests would require adding things here!
+        (list 'read read)
+        (list 'pair? pair?)
+        (list 'symbol? symbol?)
+        (list 'symbol->string symbol->string)
+        (list 'string->symbol string->symbol)
+        (list 'string=? string=?)
+        (list 'substring substring)
+        (list 'open-input-file open-input-file)
+        (list 'eof-object? eof-object?)
+        (list 'close-input-port close-input-port)
+        (list 'equal? equal?)
+        (list 'caar caar)
+        (list 'cadr cadr)
+        (list 'cddr cddr)
+        (list 'caddr caddr)
+        (list 'cadar cadar)
+        (list 'caddar caddar)
+        (list 'string-length string-length)
+        (list 'string-append string-append)
+        (list 'assoc assoc)
+        (list 'number? number?)
+        (list 'append append)
+        (list 'error error)
+        (list 'apply apply)
+        ; because we use the environment with our custom evaluate, it needs to be an 'ambeval' environment
+        ; exposing it directly is pretty terrible... Whatever.
+        ; also doing it lazily to avoid circular definition issues.
+        (list 'eval (lambda (expr) (evaluate expr the-global-environment)))
     ))
 
 ; we need functions for 'and/or' if we want to add them as primitives (functions and not special forms)

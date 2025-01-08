@@ -20,46 +20,20 @@
   )
 
 
-(define (qeval query frame-stream)
+(define (qeval query frame)
   (let ((qproc (get (type query) 'qeval)))
     (if qproc
-      (qproc (contents query) frame-stream)
-      (simple-query query frame-stream)
+      (qproc (contents query) frame)
+      (simple-query query frame)
       )
     )
   )
 
 
-(define (simple-query query-pattern frame-stream)
-
-
-  (define (loop-detector frame)
-    (define frames-history (lookup-history query-pattern))
-
-    )
-
-
-  (define (logger frame)
-    (if *DEBUG*
-      (begin
-        (display "simple-query frame for pattern ")
-        (display query-pattern)
-        (display " : ")
-        (display frame)
-        (newline)
-        )
-      )
-    frame
-    )
-
-  (stream-flatmap
-    (lambda (frame)
-      (stream-append-delayed
-        (find-assertions query-pattern frame)
-        (delay (apply-rules query-pattern frame))
-        )
-      )
-    (stream-map logger frame-stream)
+(define (simple-query query-pattern frame)
+  (amb
+    (find-assertions query-pattern frame)
+    (apply-rules query-pattern frame)
     )
   )
 
@@ -67,101 +41,84 @@
 ; compound queries
 
 ; and
-(define (conjoin conjuncts frame-stream)
-  (define (helper conjuncts frame-stream index)
-    (define (maybe-log frame)
-      (if (= index 0)
-        (begin
-          (debug-log "valid frame for: ")
-          (debug-log (first-conjunct conjuncts))
-          (debug-log " instantiated frame=")
-          (debug-log (instantiate (first-conjunct conjuncts) frame
-                     (lambda (v f)
-                       (contract-question-mark v))))
-          (debug-log "\n")
-          )
-        )
-      frame
-      )
-    (if (empty-conjunction? conjuncts)
-      frame-stream
-      (helper
-        (rest-conjuncts conjuncts)
-        (stream-map maybe-log (qeval (first-conjunct conjuncts) frame-stream))
-        (+ index 1)
-        )
+(define (conjoin conjuncts frame)
+  (if (empty-conjunction? conjuncts)
+    frame
+    (conjoin
+      (rest-conjuncts conjuncts)
+      (qeval (first-conjunct conjuncts) frame)
       )
     )
-  (helper conjuncts frame-stream 0)
   )
 
 
-;(define (conjoin conjuncts frame-stream)
-;  (if (empty-conjunction? conjuncts)
-;    frame-stream
-;    (conjoin
-;      (rest-conjuncts conjuncts)
-;      (qeval (first-conjunct conjuncts) frame-stream)
+; or
+(define (disjoin disjuncts frame)
+  (if (empty-disjunction? disjuncts)
+    (amb)
+    (amb
+      (qeval (first-disjunct disjuncts) frame)
+      (disjoin (rest-disjuncts disjuncts) frame)
+      )
+    )
+  )
+
+
+
+(define (negate operands frame)
+  (require-fail (qeval (negated-query operands) frame))
+  frame
+  )
+
+;; This is broken in an interesting way. See comments. Should be able to run it and see prints.
+;(define (negate operands frame)
+;  ; Here we want to test that the query returns no value.
+;  ; I think this can't be done without a language construct? like if-fail.
+;  ; if-fail reminder: (if-fail thing-that-fails if-it-fails). Only 2 arguments, not 3.
+;  (define has-results
+;    (if-fail
+;      (begin
+;        (qeval (negated-query operands) frame)
+;        (display "NEGATE, HAD RESULTS. MEANS WE WONT RETURN THE FRAME")
+;        (newline)
+;        ; if we get there then there was at least one result.
+;        #t
+;        )
+;      #f
 ;      )
+;    )
+;  (display "has-results=")
+;  (display has-results)
+;  (display ", (negated-query operands)=")
+;  (display (negated-query operands))
+;  (newline)
+;  (if (not has-results)
+;    frame
+;    ; we cannot call (amb) inside the if-fail first clause, it would cause the evaluator to try again *inside the clause*.
+;    ; this is pretty subtle. Look at the comment on: https://www.inchmeal.io/sicp/ch-4/ex-4.78.html
+;    (amb)
 ;    )
 ;  )
 
 
-; or
-(define (disjoin disjuncts frame-stream)
-  (if (empty-disjunction? disjuncts)
-    the-empty-stream
-    (interleave-delayed
-      (qeval (first-disjunct disjuncts) frame-stream)
-      (delay (disjoin (rest-disjuncts disjuncts) frame-stream))
+(define (lisp-value call frame)
+  (require
+    (execute
+      (instantiate call frame (lambda (v f) (error "Unknown pat var -- LIST-VALUE" v)))
       )
     )
-  )
-
-
-
-; I think we could write this with stream-filter?
-; TODO test it. No reason it wouldn't work imo
-(define (negate operands frame-stream)
-  (stream-flatmap
-    (lambda (frame)
-      (if (stream-null? (qeval (negated-query operands) (singleton-stream frame)))
-        ; no matches for query in the frame, include it. (remember we're evaluating 'not query')
-        (singleton-stream frame)
-        ; the frame matches the query: filter it out
-        the-empty-stream
-        )
-      )
-    frame-stream
-    )
-  )
-
-
-(define (lisp-value call frame-stream)
-  (stream-flatmap
-    (lambda (frame)
-;      (newline)
-;      (display "lisp-value for frame: ")
-;      (display frame)
-      (if (execute
-            (instantiate call frame (lambda (v f) (error "Unknown pat var -- LIST-VALUE" v)))
-            )
-        (singleton-stream frame)
-        the-empty-stream)
-      )
-    frame-stream
-    )
+  frame
   )
 
 
 (define (execute exp)
   (apply
-    (eval (lisp-value-predicate exp) user-initial-environment)
+    (eval (lisp-value-predicate exp))
     (lisp-value-args exp)
     )
   )
 
-(define (always-true ignore frame-stream) frame-stream)
+(define (always-true ignore frame) frame)
 
 (put 'lisp-value 'qeval lisp-value)
 (put 'and 'qeval conjoin)

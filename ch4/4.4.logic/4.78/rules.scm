@@ -1,8 +1,8 @@
 ; code from section 4.4.4.4
 
 (define (apply-rules pattern frame)
-  (stream-flatmap (lambda (rule) (apply-a-rule rule pattern frame))
-    (fetch-rules pattern frame))
+  (define rule (fetch-rules pattern frame))
+  (apply-a-rule rule pattern frame)
   )
 
 
@@ -11,10 +11,8 @@
     (let ((unify-result
             (unify-match query-pattern (conclusion clean-rule)
               query-frame)))
-      (if (eq? unify-result 'failed)
-        the-empty-stream
-        (qeval (rule-body clean-rule) (singleton-stream unify-result))
-        )
+      (require (not (eq? unify-result 'failed)))
+      (qeval (rule-body clean-rule) unify-result)
       )
     )
   )
