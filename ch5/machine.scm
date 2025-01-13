@@ -76,6 +76,7 @@
            (the-ops
              (list
                (list 'initialize-stack (lambda () (stack 'initialize)))
+               (list 'print-stack-statistics (lambda () (stack 'print-statistics)))
                )
              )
            (register-table

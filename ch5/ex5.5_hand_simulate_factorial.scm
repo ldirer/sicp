@@ -1,31 +1,32 @@
+; recursive factorial machine - figure 5.11
+(define rec-factorial-controller
+  '(controller
+     (assign continue (label fact-done))
+     fact-loop
 
-; recursive factorial machine
-(controller
-  (assign continue (label fact-done))
-  fact-loop
+     (test (op =) (reg n) (const 0))
+     (branch (label fact-base-case))
 
-  (test (op =) (reg n) (const 0))
-  (branch fact-base-case)
+     ; prepare for recursive call
+     (save continue)
+     (save n)
+     (assign n (op -) (reg n) (const 1))
+     (assign continue (label after-fact))
+     (goto (label fact-loop))
 
-  ; prepare for recursive call
-  (save continue)
-  (save n)
-  (assign n (op -) (reg n) (const 1))
-  (assign continue (label after-fact))
-  (goto (label fact-loop))
+     after-fact
+     ; undo the 'save' that we did in *our* level of recursion. Order matters! we are sharing a stack here.
+     (restore n)
+     (restore continue)
+     (assign val (op *) (reg n) (reg val))
+     (goto (reg continue))
 
-  after-fact
-  ; undo the 'save' that we did in *our* level of recursion. Order matters! we are sharing a stack here.
-  (restore n)
-  (restore continue)
-  (assign val (op *) (reg n) (reg val))
-  (goto (reg continue))
-
-  fact-base-case
-  ; note there's no 'restore continue' here.
-  (assign val (const 1))
-  (goto (reg continue))
-  fact-done
+     fact-base-case
+     ; note there's no 'restore continue' here.
+     (assign val (const 1))
+     (goto (reg continue))
+     fact-done
+     )
   )
 
 
