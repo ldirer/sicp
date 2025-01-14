@@ -1,3 +1,4 @@
+; instruction tracing
 (define (make-new-machine)
   (let (
          (pc (make-register 'pc))
@@ -5,6 +6,7 @@
          (stack (make-stack))
          (the-instruction-sequence '())
          (instruction-counter 0)
+         (trace #f)
          )
 
     (define (print-and-reset-instruction-counter)
@@ -47,6 +49,12 @@
             'done
             (begin
               (set! instruction-counter (+ instruction-counter 1))
+              (if trace
+                (begin
+                  (newline)
+                  (display (instruction-text (car insts)))
+                  )
+                )
               ((instruction-execution-proc (car insts)))
               (execute)
               )
@@ -65,6 +73,8 @@
           ; this is an append. But since the-ops is an assoc list new values will clobber old ones.
           ((eq? message 'install-operations) (lambda (ops) (set! the-ops (append the-ops ops))))
           ((eq? message 'stack) stack)
+          ((eq? message 'trace-on) (set! trace #t) 'ok)
+          ((eq? message 'trace-off) (set! trace #f) 'ok)
           ((eq? message 'operations) the-ops)
           (else (error "Unknown request -- MACHINE" message))
           )
