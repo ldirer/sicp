@@ -108,11 +108,11 @@
         )
 
       (define (lookup-breakpoint inst)
-        (newline)
-        (display "inst at ")
-        (display (instruction-preceding-label inst))
-        (display ":")
-        (display (instruction-label-offset inst))
+;        (newline)
+;        (display "inst at ")
+;        (display (instruction-preceding-label inst))
+;        (display ":")
+;        (display (instruction-label-offset inst))
         (define maybe-breakpoint (make-breakpoint (instruction-preceding-label inst) (instruction-label-offset inst)))
         (if (member maybe-breakpoint breakpoints equal?)
           maybe-breakpoint
