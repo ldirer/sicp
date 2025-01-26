@@ -11,6 +11,7 @@
 (define ev-let-controller
   '(
      ev-let
+     (perform (op debug-print) (const "in let controller, exp=") (reg exp))
      (assign exp (op let->combination) (reg exp))
      (goto (label eval-dispatch))
      )

@@ -1,6 +1,10 @@
 ; section 5.4 - The Explicit Control Evaluator
 ; Reminder: we assume a lot of primitive operations are available for simplicity.
 ; Really we would need to replace them with series of elementary instructions.
+; TODO: DO IT TWO WAYS
+; 1. FORCE AND OTHER STUFF AS CONTROLLER CODE. LIKE INCHMEAL.
+; 2. ONCE THIS WORKS, AN ALTERNATIVE WITH EVAL. IT SHOULD BE POSSIBLE (and lets us move some controller code to primitives).
+; -> I'm going to try 2 first.
 
 (define dispatch-controller
   '(eval-dispatch
@@ -29,14 +33,57 @@
      (goto (label unknown-expression-type))
      )
   )
+
+
+; TODO: cleanup we need to compute the args before going to eval-dispatch.
+; like a primitive function. Erm.
+; ALSO: this is almost certainly not how we want to do things. This hardcodes `eval` as something that can't be overwritten.
+; --> How do we bridge the gap between controller-defined functions and user code then??
+; I think we need special syntax. But it could be behind an 'internal-' prefix.
+
+; I thought about skipping the 'application' controller code and just interpreting `internal-eval exp env` directly.
+; But it meant adding a test at the top level of the dispatch. Which I thought was not very nice. Feels wasteful...
+; Though obviously *here* it does not matter.
+; So eventually I settled for a special 'internal-eval keyword/reserved variable.
+(define internal-eval-controller
+  '(
+     internal-eval
+     (save exp)
+     (save env)
+     (save continue)
+     (assign exp (op first-operand) (reg argl))
+     (assign argl (op rest-operands) (reg argl))
+     (assign env (op first-operand) (reg argl))
+     (assign continue (label after-eval))
+     (goto (label eval-dispatch))
+
+     after-eval
+     (restore continue)
+     (restore env)
+     (restore exp)
+     (goto (reg continue))
+     )
+  )
+
 (define self-ev-controller
   '(
      ev-self-eval
      (assign val (reg exp))
      (goto (reg continue))
      ev-variable
+     ; this is hardcoded and admittedly pretty terrible, but I'm not sure how to do it differently!
+     ; we need a keyword or a special variable to bridge the scheme code - controller code gap. Missing something?..
+     (test (op equal?) (reg exp) (const internal-eval))
+     (branch (label ev-variable-internal))
      (assign val (op lookup-variable-value) (reg exp) (reg env))
      (goto (reg continue))
+
+     ev-variable-internal
+     ; use a type tag to identify the value as a controller procedure later on
+     (assign val (label internal-eval))
+     (assign val (op cons) (const controller-procedure) (reg val))
+     (goto (reg continue))
+
      ev-quoted
      (assign val (op text-of-quotation) (reg exp))
      (goto (reg continue))
@@ -101,6 +148,7 @@
   )
 
 
+; expects the 'continue' address on the stack.
 (define apply-controller
   '(
      apply-dispatch
@@ -108,7 +156,19 @@
      (branch (label primitive-apply))
      (test (op compound-procedure?) (reg proc))
      (branch (label compound-apply))
+     (test (op controller-procedure?) (reg proc))
+     (branch (label controller-defined-apply))
      (goto (label unknown-procedure-type))
+
+     controller-defined-apply
+     ; proc stores an object with the controller label to jump to.
+     (assign continue (label after-controller-defined-apply))
+     (assign proc (op controller-procedure-label) (reg proc))
+     (goto (reg proc))
+
+     after-controller-defined-apply
+     (restore continue)
+     (goto (reg continue))
 
      primitive-apply
      (assign val (op apply-primitive-procedure) (reg proc) (reg argl))
@@ -263,6 +323,7 @@
     conditional-controller
     assignment-controller
     definition-controller
+    internal-eval-controller
     )
   )
 
