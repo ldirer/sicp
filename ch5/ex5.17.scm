@@ -119,6 +119,14 @@
             (begin
               (set! instruction-counter (+ instruction-counter 1))
               (if trace
+;                (and trace
+;                    ; why not: implement trace-filters. useful!! maybe make it a proc with inst as parameter.
+;                    (or
+;                      (equal? (car (instruction-text (car insts))) 'restore)
+;                      (equal? (car (instruction-text (car insts))) 'save)
+;                      (equal? (cadr (instruction-text (car insts))) 'continue)
+;                      )
+;                    )
                 (print-instruction (car insts))
                 )
               ((instruction-execution-proc (car insts)))

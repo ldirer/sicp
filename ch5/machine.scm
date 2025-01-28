@@ -7,6 +7,8 @@
       (cond
         ((eq? message 'get) contents)
         ((eq? message 'set) (lambda (value) (set! contents value)))
+        ; debugging
+        ((eq? message 'name) name)
         (else (error "Unknown request -- REGISTER" message))
         )
       )

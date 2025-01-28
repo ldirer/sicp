@@ -1,10 +1,6 @@
 ; section 5.4 - The Explicit Control Evaluator
 ; Reminder: we assume a lot of primitive operations are available for simplicity.
 ; Really we would need to replace them with series of elementary instructions.
-; TODO: DO IT TWO WAYS
-; 1. FORCE AND OTHER STUFF AS CONTROLLER CODE. LIKE INCHMEAL.
-; 2. ONCE THIS WORKS, AN ALTERNATIVE WITH EVAL. IT SHOULD BE POSSIBLE (and lets us move some controller code to primitives).
-; -> I'm going to try 2 first.
 
 (define dispatch-controller
   '(eval-dispatch
@@ -34,12 +30,6 @@
      )
   )
 
-
-; TODO: cleanup we need to compute the args before going to eval-dispatch.
-; like a primitive function. Erm.
-; ALSO: this is almost certainly not how we want to do things. This hardcodes `eval` as something that can't be overwritten.
-; --> How do we bridge the gap between controller-defined functions and user code then??
-; I think we need special syntax. But it could be behind an 'internal-' prefix.
 
 ; I thought about skipping the 'application' controller code and just interpreting `internal-eval exp env` directly.
 ; But it meant adding a test at the top level of the dispatch. Which I thought was not very nice. Feels wasteful...
@@ -73,6 +63,7 @@
      ev-variable
      ; this is hardcoded and admittedly pretty terrible, but I'm not sure how to do it differently!
      ; we need a keyword or a special variable to bridge the scheme code - controller code gap. Missing something?..
+     ; thinking about it, we could use a tagged list. Primitives do that. Leaving it at that.
      (test (op equal?) (reg exp) (const internal-eval))
      (branch (label ev-variable-internal))
      (assign val (op lookup-variable-value) (reg exp) (reg env))

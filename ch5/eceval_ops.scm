@@ -1,7 +1,7 @@
 (load "ch4/syntax.scm")
 (load "ch4/4.1.4/driver.scm")
 (load "ch4/environment.scm")
-(load "ch4/4.1.4/primitives.scm")
+(load "ch5/primitives.scm")
 (load "ch4/interpreter_rules.scm")
 (load "ch5/lazy.scm")
 
@@ -9,11 +9,13 @@
 (define (adjoin-arg arg arglist) (append arglist (list arg)))
 (define (last-operand? ops) (null? (cdr ops)))
 
-
 (define the-global-environment (setup-environment))
-(define (get-global-environment) the-global-environment)
-; make it available inside the eceval. If we wanted a procedure we'd need to call make-procedure.
+(define eval (make-procedure '(exp env) '((internal-eval exp env)) the-global-environment))
+;; make the env object available inside the eceval. If we wanted a procedure we'd need to call make-procedure.
 (define-variable! 'the-global-environment the-global-environment the-global-environment)
+(define-variable! 'eval eval the-global-environment)
+
+(define (get-global-environment) the-global-environment)
 
 (define (true? x) (not (eq? x false)))
 (define (false? x) (eq? x false))
@@ -26,45 +28,35 @@
 (define (debug-print . args)
   (newline)
   (for-each (lambda (arg)
-              (display arg)
+              (user-print arg)
               (display " ")
               )
     args)
   )
 
 
-(define-variable! 'eval (make-procedure '(exp env) '((internal-eval exp env)) the-global-environment) the-global-environment)
-
-(define (internal-eval? exp) (tagged-list? exp 'internal-eval))
-(define (eval-exp exp) (cadr (cadr exp)))  ; Note the double cadr! Extra one to remove the quote, exp is passed as a symbol.
-(define (eval-env exp) (caddr exp))
-
-(define (internal-eval-proc? exp)
-  (eq? exp 'internal-eval)
-  )
-
 (define (controller-procedure? obj) (eq? (car obj) 'controller-procedure))
 (define (controller-procedure-label obj) (cdr obj))
+
 (define eceval-operations
   (list
-    ; ex5.25 - normal order evaluation
-    (list 'internal-eval-proc? internal-eval-proc?)
+    ; side quest, see eceval_test_eval.scm
     (list 'controller-procedure? controller-procedure?)
     (list 'controller-procedure-label controller-procedure-label)
+
+    ; ex5.25 - normal order evaluation
+    (list 'set-car! set-car!)
+    (list 'set-cdr! set-cdr!)
+    (list 'car car)
+    (list 'cdr cdr)
     (list 'cons cons)
-;    (list 'eval? eval?)
-    (list 'eval-exp eval-exp)
-    (list 'eval-env eval-env)
     (list 'delay-it delay-it)
     (list 'thunk? thunk?)
-    (list 'thunk-expr thunk-expr)
+    (list 'thunk-exp thunk-expr)  ; exp vs expr renaming
     (list 'thunk-env thunk-env)
     (list 'evaluated-thunk? evaluated-thunk?)
     (list 'evaluated-thunk-value evaluated-thunk-value)
-    (list 'actual-value actual-value)
-    (list 'force-it force-it)
 
-    (list 'list-of-actual-values list-of-actual-values)
     (list 'list-of-values-delayed list-of-values-delayed)
 
     ; ex5.23

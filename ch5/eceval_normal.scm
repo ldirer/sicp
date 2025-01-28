@@ -7,7 +7,7 @@
 ;(load "ch5/ex5.18.scm")
 ;; 5.11 enables a stack that tracks which register the value belonged to and refuses to restore to a different one.
 ;; issue with this is that if part of the assembler code *does* use that behavior on purpose, it will crash.
-;(load "ch5/ex5.11.scm")
+(load "ch5/ex5.11.scm")
 (load "ch5/stack-with-stats.scm")
 (load "ch5/eceval_ops.scm")
 
