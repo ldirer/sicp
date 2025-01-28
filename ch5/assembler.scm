@@ -147,6 +147,7 @@
           (set-contents! flag (condition-proc))
           (advance-pc pc))
         )
+      (error "bad test instruction, an operation is required -- ASSEMBLE" inst)
       )
     )
   )

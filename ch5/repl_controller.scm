@@ -19,6 +19,9 @@
       (goto (label signal-error))
 
       unknown-procedure-type
+      ; QUESTION: Why restore continue? we will reinit the stack anyway and set a value in continue before we go to dispatch
+      ; It could be 'defensive', to make this the same as the other cases... But I'm not sure what the point would be.
+      ; maybe if we wanted to *skip* the error. I could see that maybe. But that's far fetched as a usecase?
       (restore continue)               ; clean up stack (from apply-dispatch)
       (assign val (const unknown-procedure-type-error))
       (goto (label signal-error))

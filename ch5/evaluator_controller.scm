@@ -67,7 +67,15 @@
      (test (op equal?) (reg exp) (const internal-eval))
      (branch (label ev-variable-internal))
      (assign val (op lookup-variable-value) (reg exp) (reg env))
+     ; ex5.30 - handle unbound variable error
+     (test (op unbound-variable-error?) (reg val))
+     (branch (label unbound-variable))
      (goto (reg continue))
+
+     unbound-variable
+     (assign val (const unbound-variable-error))
+     (assign val (op cons) (reg val) (reg exp))
+     (goto (label signal-error))
 
      ev-variable-internal
      ; use a type tag to identify the value as a controller procedure later on
@@ -171,8 +179,22 @@
      (assign unev (op procedure-parameters) (reg proc))
      (assign env (op procedure-environment) (reg proc))
      (assign env (op extend-environment) (reg unev) (reg argl) (reg env))
+
+     (test (op too-many-arguments-error?) (reg env))
+     (branch (label too-many-arguments-error))
+     (test (op too-few-arguments-error?) (reg env))
+     (branch (label too-few-arguments-error))
+
      (assign unev (op procedure-body) (reg proc))
      (goto (label ev-sequence))
+
+     too-many-arguments-error
+     (assign val (const too-many-arguments-error))
+     (goto (label signal-error))
+
+     too-few-arguments-error
+     (assign val (const too-few-arguments-error))
+     (goto (label signal-error))
 
      ev-begin
      (assign unev (op begin-actions) (reg exp))
@@ -275,9 +297,16 @@
      (restore continue)
      (restore env)
      (restore unev)
-     (perform (op set-variable-value!) (reg unev) (reg val) (reg env))
-     (assign val (const ok))
+     (assign val (op set-variable-value!) (reg unev) (reg val) (reg env))
+     (test (op unbound-variable-error?) (reg val))
+     (branch (label assignment-unbound-variable))
      (goto (reg continue))
+
+     assignment-unbound-variable
+     (assign val (const unbound-variable-error))
+     (assign val (op cons) (reg val) (reg unev))
+     (goto (label signal-error))
+
      )
   )
 

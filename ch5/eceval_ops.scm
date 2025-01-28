@@ -4,6 +4,7 @@
 (load "ch5/primitives.scm")
 (load "ch4/interpreter_rules.scm")
 (load "ch5/lazy.scm")
+(load "ch5/ex5.30_a.scm")
 
 (define (empty-arglist) (list))
 (define (adjoin-arg arg arglist) (append arglist (list arg)))
@@ -40,6 +41,11 @@
 
 (define eceval-operations
   (list
+    ; ex5.30
+    (list 'unbound-variable-error? unbound-variable-error?)
+    (list 'too-many-arguments-error? too-many-arguments-error?)
+    (list 'too-few-arguments-error? too-few-arguments-error?)
+
     ; side quest, see eceval_test_eval.scm
     (list 'controller-procedure? controller-procedure?)
     (list 'controller-procedure-label controller-procedure-label)
