@@ -2,6 +2,19 @@
 ; Reminder: we assume a lot of primitive operations are available for simplicity.
 ; Really we would need to replace them with series of elementary instructions.
 
+
+; b.
+; > Alyssa P. Hacker suggests that by extending the evaluator to recognize more and more special cases we could incorporate all
+; > the compiler's optimizations, and that this would eliminate the advantages of compilation altogether.
+; I think:
+; 1. We won't be able to reproduce the gains of the 'analyze' phase (similar to the analyzing interpreter).
+; The interpreter will need to re-parse the body of a procedure every time it runs, the compiler can do better.
+; 2. The evaluator tests to choose the optimized branch are at runtime, they are not free (unlike the compiler's).
+; 3. It's hard to write this controller code! I expect the compiler code to be much easier to work with when it comes to optimizations.
+; 4. Ultimately the compiler might be able to produce code that runs on a machine with different registers.
+; In that sense it's not comparable to an optimized explicit control evaluator, that will always need the `exp` register.
+
+
 (define dispatch-controller
   '(eval-dispatch
      (test (op self-evaluating?) (reg exp))
@@ -98,17 +111,26 @@
   '(
      ev-application
      (save continue)
-     (save env)
      (assign unev (op operands) (reg exp))
-     (save unev)
      (assign exp (op operator) (reg exp))
-     (assign continue (label ev-appl-did-operator))
+
+     ; optimization: don't save/restore env if the operator is a symbol (evaluating it does not modify env). Also unev.
+     (test (op variable?) (reg exp))
+     (branch (label ev-appl-operator-symbol))
+     (save env)
+     (save unev)
+     (assign continue (label ev-appl-did-operator-restore))
      (goto (label eval-dispatch))
 
+     ev-appl-operator-symbol
+     (assign continue (label ev-appl-did-operator-no-restore))
+     (goto (label eval-dispatch))
 
-     ev-appl-did-operator
+     ev-appl-did-operator-restore
      (restore unev)                                    ; the operands
      (restore env)
+
+     ev-appl-did-operator-no-restore
      (assign argl (op empty-arglist))
      (assign proc (reg val))                           ; the operator
      (test (op no-operands?) (reg unev))
@@ -345,7 +367,4 @@
     internal-eval-controller
     )
   )
-
-
-
 
