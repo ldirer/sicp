@@ -30,16 +30,16 @@
 ;(base) laurent@pop-os:~/programming/sicp (main)diff ch5/compiler/ex5.33_factorial_*
 ;33,34c33,36
 ;< (save env)
-;< (assign proc (op (lookup-variable-value (const factorial-alt) (reg env))))
+;< (assign proc (op lookup-variable-value) (const factorial-alt) (reg env))
 ;---
-;> (assign val (op (lookup-variable-value (const n) (reg env))))
+;> (assign val (op lookup-variable-value) (const n) (reg env))
 ;> (assign argl (op list) (reg val))
 ;> (save argl)
-;> (assign proc (op (lookup-variable-value (const factorial) (reg env))))
+;> (assign proc (op lookup-variable-value) (const factorial) (reg env))
 ;61,63c63
 ;< (assign argl (op list) (reg val))
 ;< (restore env)
-;< (assign val (op (lookup-variable-value (const n) (reg env))))
+;< (assign val (op lookup-variable-value) (const n) (reg env))
 ;---
 ;> (restore argl)
 
