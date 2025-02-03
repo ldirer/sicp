@@ -63,7 +63,7 @@
             (append
               `((save ,first-reg))
               (statements seq1)
-              `(restore ,first-reg)
+              `((restore ,first-reg))
               )
             )
           seq2

@@ -277,7 +277,7 @@
     (let ((compiled-linkage (if (eq? linkage 'next) after-call linkage)))
       (append-instruction-sequences
         (make-instruction-sequence '(proc) '()
-          '(
+          `(
              (test (op primitive-procedure?) (reg proc))
              (branch (label ,primitive-branch))
              )
