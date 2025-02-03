@@ -1,4 +1,5 @@
 (load "ch5/compiler/compiler.scm")
+(load "ch5/compiler/utils.scm")
 
 (define factorial-iter-code
   (compile '(define (factorial n)
@@ -13,11 +14,6 @@
     'val
     'next
     ))
-
-(define (display-newline a) (newline) (display a))
-(define (display-list items)
-  (for-each display-newline items)
-  )
 
 (display-list (statements factorial-iter-code))
 

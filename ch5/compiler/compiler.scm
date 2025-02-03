@@ -80,7 +80,7 @@
       '(env)
       (list target)
       `(
-         (assign ,target (op (lookup-variable-value (const ,exp) (reg env))))
+         (assign ,target (op (lookup-variable-value) (const ,exp) (reg env)))
          )
       )
     )

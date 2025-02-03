@@ -1,3 +1,4 @@
+; this version has a bug in instructions that use lookup-variable-value
 (assign val (op make-compiled-procedure) (label entry2) (reg env))
 (goto (label after-lambda1))
 entry2
