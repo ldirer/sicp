@@ -243,8 +243,8 @@
         (if (null? (cdr operand-codes))
           code-to-get-last-arg                ; termination
           (preserving '(env)                  ; recursion
-            code-to-get-rest-args
-            (cdr operand-codes)
+            code-to-get-last-arg
+            (code-to-get-rest-args (cdr operand-codes))
             )
           )
         )
