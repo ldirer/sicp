@@ -80,7 +80,7 @@
       '(env)
       (list target)
       `(
-         (assign ,target (op (lookup-variable-value) (const ,exp) (reg env)))
+         (assign ,target (op lookup-variable-value) (const ,exp) (reg env))
          )
       )
     )
@@ -202,7 +202,7 @@
            ,proc-entry
            ; does this not make the assumption that the procedure object is in proc? We put it in 'target in compile-lambda...
            ; --> we put the lambda object in val, as a variable. Before application, the procedure object will be moved to 'proc.
-           (assign env (op compiled-procedure env) (reg proc))
+           (assign env (op compiled-procedure-env) (reg proc))
            (assign env (op extend-environment) (const ,formals) (reg argl) (reg env))
            )
         )

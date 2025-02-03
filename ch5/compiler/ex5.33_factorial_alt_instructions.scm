@@ -1,7 +1,7 @@
 (assign val (op make-compiled-procedure) (label entry2) (reg env))
 (goto (label after-lambda1))
 entry2
-(assign env (op compiled-procedure env) (reg proc))
+(assign env (op compiled-procedure-env) (reg proc))
 (assign env (op extend-environment) (const (n)) (reg argl) (reg env))
 (save continue)
 (save env)

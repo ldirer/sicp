@@ -80,12 +80,14 @@
       )
    )
 
-(display-list (map
-                (lambda (pair) (let ((a (car pair)) (b (cadr pair))) (if (equal? a b) (list 'ok a) (list 'NOK a b))))
-                (zip
-                  compiled-guess
-                  mystery-instructions
-                  )
-                )
-  )
-;(check-equal "mystery solved?" compiled-guess mystery-instructions)
+; line by line comparison... I had MULTIPLE small bugs in my compiler still.
+;(display-list (map
+;                (lambda (pair) (let ((a (car pair)) (b (cadr pair))) (if (equal? a b) (list 'ok a) (list 'NOK a b))))
+;                (zip
+;                  compiled-guess
+;                  mystery-instructions
+;                  )
+;                )
+;  )
+
+(check-equal "mystery solved?" compiled-guess mystery-instructions)

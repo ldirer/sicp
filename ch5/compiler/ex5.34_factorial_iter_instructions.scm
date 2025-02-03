@@ -1,13 +1,13 @@
 (assign val (op make-compiled-procedure) (label entry2) (reg env))
 (goto (label after-lambda1))
 entry2
-(assign env (op compiled-procedure env) (reg proc))
+(assign env (op compiled-procedure-env) (reg proc))
 (assign env (op extend-environment) (const (n)) (reg argl) (reg env))
 ; this is the iter compiled procedure
 (assign val (op make-compiled-procedure) (label entry7) (reg env))
 (goto (label after-lambda6))
 entry7                                                                                  ; iter body
-(assign env (op compiled-procedure env) (reg proc))
+(assign env (op compiled-procedure-env) (reg proc))
 (assign env (op extend-environment) (const (product n)) (reg argl) (reg env))
 ; save continue and env before applying > because the if-alternate branch uses them
 (save continue)
