@@ -1,5 +1,11 @@
 (load "ch4/syntax.scm")
 (load "ch5/compiler/instruction_sequence.scm")
+(load "ch5/compiler/ex5.38.scm")
+
+; ex5.38
+(define (open-coded-primitive? exp)
+  (and (pair? exp) (memq (car exp) '(+ * = -)))
+  )
 
 (define (compile exp target linkage)
   (cond
@@ -12,6 +18,7 @@
     ((lambda? exp) (compile-lambda exp target linkage))
     ((begin? exp) (compile-sequence (begin-actions exp) target linkage))
     ((cond? exp) (compile (cond->if exp) target linkage))
+    ((open-coded-primitive? exp) (compile-primitive-op exp target linkage))
     ((application? exp) (compile-application exp target linkage))
     (else (error "Unknown expression type -- COMPILE" exp))
     )

@@ -49,6 +49,14 @@
 
 
 (define (preserving regs seq1 seq2)
+;  (newline)
+;  (display "regs, seq1, seq2")
+;  (newline)
+;  (display regs)
+;  (newline)
+;  (display seq1)
+;  (newline)
+;  (display seq2)
   (if (null? regs)
     (append-instruction-sequences seq1 seq2)
     (let ((first-reg (car regs)))
