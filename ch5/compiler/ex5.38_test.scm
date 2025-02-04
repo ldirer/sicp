@@ -1,6 +1,6 @@
-
 (load "ch5/compiler/compiler.scm")
 (load "ch5/compiler/utils.scm")
+(load "testing.scm")
 
 ;todo check why we don't need to preserve env here. Eli does not have it
 
@@ -26,4 +26,14 @@
 ; TODO won't work with a plain list returned by spread-arguments
 ;(display-list (statements (spread-arguments '(1 (+ 2 3)))))
 
-(display-list (statements (compile '(+ 2 (+ 1 1)) 'val 'next)))
+(check-equal "save and restore correctly inserted" (statements (compile '(+ 2 (+ 1 1)) 'val 'next))
+  '(
+     (assign arg1 (const 2))
+     (save arg1)
+     (assign arg1 (const 1))
+     (assign arg2 (const 1))
+     (assign arg2 (op +) (reg arg1) (reg arg2))
+     (restore arg1)
+     (assign val (op +) (reg arg1) (reg arg2))
+     )
+  )
