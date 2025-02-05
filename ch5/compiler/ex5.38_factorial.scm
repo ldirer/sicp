@@ -11,7 +11,7 @@
                                    )
                          'val
                          'next
-                         (empty-compiler-environment)
+                         the-empty-compiler-environment
                          ))
 
 (display-list (statements factorial-code))

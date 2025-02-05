@@ -14,7 +14,7 @@
       eceval-operations
       (append
         minimal-controller-start
-        (statements (compile expression 'val 'next (empty-compiler-environment)))
+        (statements (compile expression 'val 'next the-empty-compiler-environment))
         )
       )
     )

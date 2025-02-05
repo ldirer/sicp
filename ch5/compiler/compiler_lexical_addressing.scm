@@ -1,6 +1,7 @@
 (load "ch4/syntax.scm")
 (load "ch5/compiler/instruction_sequence.scm")
 (load "ch5/compiler/ex5.38.scm")
+(load "ch5/compiler/compiler_environment.scm")
 
 ; ex5.38
 (define (open-coded-primitive? exp)
@@ -215,7 +216,7 @@
            (assign env (op extend-environment) (const ,formals) (reg argl) (reg env))
            )
         )
-      (compile-sequence (lambda-body exp) 'val 'return comp-env)
+      (compile-sequence (lambda-body exp) 'val 'return (extend-compiler-environment formals comp-env))
       )
     )
   )
