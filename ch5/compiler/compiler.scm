@@ -19,6 +19,7 @@
     ((begin? exp) (compile-sequence (begin-actions exp) target linkage))
     ((cond? exp) (compile (cond->if exp) target linkage))
 ;    ((open-coded-primitive? exp) (compile-primitive-op exp target linkage))
+    ((open-coded-primitive? exp) (compile-primitive-op-bis exp target linkage))
     ((application? exp) (compile-application exp target linkage))
     (else (error "Unknown expression type -- COMPILE" exp))
     )

@@ -13,6 +13,7 @@ true-branch5
 (goto (reg continue))
 false-branch4
 (save continue)
+(save env)
 (assign proc (op lookup-variable-value) (const factorial) (reg env))
 (assign arg1 (op lookup-variable-value) (const n) (reg env))
 (assign arg2 (const 1))
@@ -30,6 +31,7 @@ proc-return9
 primitive-branch8
 (assign arg1 (op apply-primitive-procedure) (reg proc) (reg argl))
 after-call6
+(restore env)
 (assign arg2 (op lookup-variable-value) (const n) (reg env))
 (assign val (op *) (reg arg1) (reg arg2))
 (restore continue)

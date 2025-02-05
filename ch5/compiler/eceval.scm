@@ -26,7 +26,8 @@
 
 
 (define eceval
-  (make-machine '(exp env val proc argl continue unev debug)
+  ; arg1 arg2 for ex5.38 - open-coded primitives
+  (make-machine '(exp env val proc argl continue unev debug arg1 arg2)
     eceval-operations
     (append repl-controller
       evaluator-controller

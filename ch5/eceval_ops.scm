@@ -50,6 +50,10 @@
     (list 'compiled-procedure-entry compiled-procedure-entry)
     (list 'list list)
     (list 'false? false?)
+    (list '= =)
+    (list '+ +)
+    (list '- -)
+    (list '* *)
 
     ; ex5.30
     (list 'unbound-variable-error? unbound-variable-error?)

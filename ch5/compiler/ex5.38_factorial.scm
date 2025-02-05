@@ -19,9 +19,10 @@
 ; - as a bonus we never need to save proc, env
 ; To be fair:
 ; - I don't know if this version of factorial would work! I did not run it. Maybe I should look into executing compiled programs...
+; --> now tested, it works
 ; - It seems like the save env could be removed from the ex5.33 version? I don't know if it's a bug in my implementation.
 
 ;(base) laurent@pop-os:~/programming/sicp (main)wc -l ch5/compiler/ex5.33_factorial_instructions.scm ch5/compiler/ex5.38_factorial_instructions.scm
 ;  79 ch5/compiler/ex5.33_factorial_instructions.scm
-;  39 ch5/compiler/ex5.38_factorial_instructions.scm
+;  41 ch5/compiler/ex5.38_factorial_instructions.scm
 
