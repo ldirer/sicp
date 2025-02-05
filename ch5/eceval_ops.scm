@@ -7,6 +7,7 @@
 (load "ch5/ex5.30_a.scm")
 ; compiled-procedure? and co
 (load "ch5/compiler/compiler.scm")
+(load "ch5/compiler/ex5.39_lexical_addressing.scm")
 
 (define (empty-arglist) (list))
 (define (adjoin-arg arg arglist) (append arglist (list arg)))
@@ -43,6 +44,9 @@
 
 (define eceval-operations
   (list
+    ; lexical addressing
+    (list 'lexical-address-lookup lexical-address-lookup)
+    (list 'lexical-address-set! lexical-address-set!)
     ; section 5.5.7
     (list 'make-compiled-procedure make-compiled-procedure)
     (list 'compiled-procedure-env compiled-procedure-env)

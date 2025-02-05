@@ -12,6 +12,7 @@
   )
 
 
+;; return a lexical address for var, or 'not-found
 (define (find-variable var comp-env)
 
   ;; the 'on-found' continuation passed as argument will get both frame and displacement number

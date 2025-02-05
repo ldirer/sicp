@@ -10,7 +10,9 @@
   (let ((frame-number (lexical-address-frame-number lexical-address))
          (displacement-number (lexical-address-displacement-number lexical-address))
          )
-    (let ((value (get-variable-with-offset (frame-values (get-ancestor-frame environment frame-number)))))
+    (let ((value (get-variable-with-offset
+                   (frame-values (get-ancestor-frame environment frame-number))
+                   displacement-number)))
       (if (eq? value '*unassigned*)
         (error "looked up an *unassigned* value, should not happen -- lexical-address-lookup" lexical-adress)
         value

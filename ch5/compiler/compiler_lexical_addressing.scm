@@ -19,7 +19,7 @@
     ((lambda? exp) (compile-lambda exp target linkage comp-env))
     ((begin? exp) (compile-sequence (begin-actions exp) target linkage comp-env))
     ((cond? exp) (compile (cond->if exp) target linkage comp-env))
-;    ((open-coded-primitive? exp) (compile-primitive-op exp target linkage comp-env))
+    ;((open-coded-primitive? exp) (compile-primitive-op exp target linkage comp-env))
     ((open-coded-primitive? exp) (compile-primitive-op-bis exp target linkage comp-env))
     ((application? exp) (compile-application exp target linkage comp-env))
     (else (error "Unknown expression type -- COMPILE" exp))
@@ -84,32 +84,43 @@
   )
 
 (define (compile-variable exp target linkage comp-env)
-  (end-with-linkage linkage
-    (make-instruction-sequence
-      '(env)
-      (list target)
-      `(
-         (assign ,target (op lookup-variable-value) (const ,exp) (reg env))
-         )
+  (let ((lexical-address (find-variable exp comp-env)))
+    (let ((statements
+            (if (equal? lexical-address 'not-found)
+              ; use the regular runtime variable lookup
+              `((assign ,target (op lookup-variable-value) (const ,exp) (reg env)))
+              `((assign ,target (op lexical-address-lookup) (const ,lexical-address) (reg env)))
+              )
+            ))
+      (end-with-linkage linkage
+        (make-instruction-sequence
+          '(env)
+          (list target)
+          statements
+          )
+        )
       )
     )
   )
 
 
 (define (compile-assignment exp target linkage comp-env)
-  (let ((var (assignment-variable exp)))
-    (let ((get-value-code (compile (assignment-value exp) 'val 'next comp-env)))
+  (let ((var (assignment-variable exp))
+         (get-value-code (compile (assignment-value exp) 'val 'next comp-env))
+         (lexical-address (find-variable exp comp-env))
+         )
+    (let ((statements
+            (if (equal? lexical-address 'not-found)
+              ; regular runtime set variable
+              `((perform (op set-variable-value!) (const ,var) (reg val) (reg env))
+                 (assign ,target (const ok)))
+              `((perform (op lexical-address-set!) (const ,lexical-address) (reg val) (reg env)))
+              )
+            ))
       (end-with-linkage linkage
         (preserving '(env)
           get-value-code
-          (make-instruction-sequence '(env val) (list target)
-            `(
-               ; might need to change this because I adapted the operation to return a value (for error handling)
-               ; though I guess it's fine to 'perform' an op that returns something. It just means we don't have error handling in _this_ case.
-               (perform (op set-variable-value!) (const ,var) (reg val) (reg env))
-               (assign ,target (const ok))
-               )
-            )
+          (make-instruction-sequence '(env val) (list target) statements)
           )
         )
       )
