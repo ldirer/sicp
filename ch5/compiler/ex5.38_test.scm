@@ -1,19 +1,20 @@
-(load "ch5/compiler/compiler.scm")
+(load "ch5/compiler/compiler_lexical_addressing.scm")
 (load "ch5/compiler/utils.scm")
 (load "testing.scm")
 (load "ch5/compiler/compile_and_run.scm")
+(load "ch5/compiler/compiler_environment.scm")
 
-;(compile '(f 1 2) 'val 'next)
-;(spread-arguments '(1 2))
+;(compile '(f 1 2) 'val 'next (empty-compiler-environment))
+;(spread-arguments '(1 2) (empty-compiler-environment))
 ;
 ;; error too many operands
-;;(spread-arguments '(1 2 3 4))
+;;(spread-arguments '(1 2 3 4) (empty-compiler-environment))
 
-;(display-list (statements (spread-arguments '(1 (+ 2 3)))))
-;(display-list (statements (spread-arguments '((f 1) 2))))
+;(display-list (statements (spread-arguments '(1 (+ 2 3)) (empty-compiler-environment))))
+;(display-list (statements (spread-arguments '((f 1) 2)) (empty-compiler-environment)))
 
 (check-equal "basic"
-  (statements (compile '(+ 1 2) 'val 'next))
+  (statements (compile '(+ 1 2) 'val 'next (empty-compiler-environment)))
   '(
      (assign arg1 (const 1))
      (assign arg2 (const 2))
@@ -31,7 +32,7 @@
                     ))
 ;(display-instruction-comparison expected (statements (compile '(+ 2 (+ 1 1)) 'val 'next)))
 ;(display-list (statements (compile '(+ 2 (+ 1 1)) 'val 'next)))
-(check-equal "save and restore correctly inserted" (statements (compile '(+ 2 (+ 1 1)) 'val 'next)) expected)
+(check-equal "save and restore correctly inserted" (statements (compile '(+ 2 (+ 1 1)) 'val 'next (empty-compiler-environment))) expected )
 
 
 ; I'm a bit confused as to env modifications that might happen when evaluating operands
@@ -77,7 +78,7 @@
   13
   )
 
-(check-equal "instruction list for more than 2 operands with +" (statements (compile '(+ 1 2 3 4 5) 'val 'next))
+(check-equal "instruction list for more than 2 operands with +" (statements (compile '(+ 1 2 3 4 5) 'val 'next (empty-compiler-environment)))
   '(
      (assign arg1 (const 1))
      (assign arg2 (const 2))

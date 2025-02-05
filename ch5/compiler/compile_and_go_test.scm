@@ -8,12 +8,6 @@
        (if (= n 1)
          1 (* (factorial (- n 1)) n))
        )
-
-     ;; crashes as expected, though I am not sure how the correct env is used in evaluating the x operand in (+ (f 2) x)...
-     ;; _almost_ as expected because the error handling is not properly used in compiled code, we see:
-     ;; ;The object (unbound-variable-error), passed as the second argument to integer-add, is not the correct type.
-     (define (f x) (+ x 1))
-     (+ (f 2) x)
      )
   )
 

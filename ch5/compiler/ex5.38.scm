@@ -4,11 +4,11 @@
 
 
 (define argument-registers '(arg1 arg2))
-(define (spread-arguments operands)
-  (spread-arguments-2 operands argument-registers (list))
+(define (spread-arguments operands comp-env)
+  (spread-arguments-2 operands argument-registers (list) comp-env)
   )
 
-(define (spread-arguments-2 operands remaining-argument-regs used-argument-regs)
+(define (spread-arguments-2 operands remaining-argument-regs used-argument-regs comp-env)
   (cond
     ((null? operands) (empty-instruction-sequence))
     ((and (null? remaining-argument-regs) (not (null? operands)))
@@ -24,7 +24,7 @@
             ; if the next expression needs it relevant save/restore instructions will be added when combining expressions (with preserving)
             ; --> precisely because there is *nothing that uses env* after this, we can leave '(env) as argument and preserving will discard it!
             '(env)
-            (compile operand arg-reg 'next)
+            (compile operand arg-reg 'next comp-env)
             ; this is a bit of a trick, we know eventually we want to use the argument registries in the operation.
             ; combining the sequence with a fake empty sequence that "needs" the registries to get the relevant save/restore instructions.
             ; see https://eli.thegreenplace.net/2008/04/18/sicp-section-55 for a different approach
@@ -45,10 +45,10 @@
 ; b.
 
 ; assume all operations use two arguments
-(define (compile-primitive-op exp target linkage)
+(define (compile-primitive-op exp target linkage comp-env)
   (let ((op-name (operator exp))
          (operands (operands exp)))
-    (let ((operands-codes (spread-arguments operands)))
+    (let ((operands-codes (spread-arguments operands comp-env)))
       (end-with-linkage
         linkage
         (append-instruction-sequences
@@ -72,7 +72,7 @@
 ; > An expression with more than two operands will have to be compiled into a sequence of operations, each with only two inputs.
 
 ; I had a hard time coming up with this code!
-(define (compile-primitive-op-bis exp target linkage)
+(define (compile-primitive-op-bis exp target linkage comp-env)
 
   (let ((op-name (operator exp))
          (operands (operands exp)))
@@ -80,24 +80,24 @@
       linkage
       (preserving '(env)
         ; first step, then all the other steps are similar.
-        (compile (car operands) 'arg1 'next)
-        (next-steps (cdr operands) op-name target)
+        (compile (car operands) 'arg1 'next comp-env)
+        (next-steps (cdr operands) op-name target comp-env)
         )
       )
     )
   )
 
-(define (next-steps remaining-operands op-name final-target)
+(define (next-steps remaining-operands op-name final-target comp-env)
   (cond ((null? remaining-operands) (empty-instruction-sequence))
     (else
       (let ((target (if (null? (cdr remaining-operands)) final-target 'arg1)))
         (preserving '(env)
           (preserving
             '(arg1)
-            (compile (car remaining-operands) 'arg2 'next)
+            (compile (car remaining-operands) 'arg2 'next comp-env)
             (make-instruction-sequence argument-registers (list target) `((assign ,target (op ,op-name) (reg arg1) (reg arg2))))
             )
-          (next-steps (cdr remaining-operands) op-name final-target)
+          (next-steps (cdr remaining-operands) op-name final-target comp-env)
           )
         )
       )

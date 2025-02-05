@@ -1,5 +1,7 @@
 (load "ch5/compiler/eceval.scm")
+(load "ch5/compiler/compiler_environment.scm")
 (load "ch5/compiler/eceval_compatibility.scm")
+(load "ch5/compiler/compiler_lexical_addressing.scm")
 
 
 ;; compile the expression, run it and return the result.
@@ -12,7 +14,7 @@
       eceval-operations
       (append
         minimal-controller-start
-        (statements (compile expression 'val 'next))
+        (statements (compile expression 'val 'next (empty-compiler-environment)))
         )
       )
     )

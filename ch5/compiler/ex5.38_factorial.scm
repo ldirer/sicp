@@ -1,6 +1,7 @@
 
-(load "ch5/compiler/compiler.scm")
+(load "ch5/compiler/compiler_lexical_addressing.scm")
 (load "ch5/compiler/utils.scm")
+(load "ch5/compiler/compiler_environment.scm")
 (load "ch5/compiler/ex5.38.scm")
 
 (define factorial-code (compile '(define (factorial n)
@@ -10,6 +11,7 @@
                                    )
                          'val
                          'next
+                         (empty-compiler-environment)
                          ))
 
 (display-list (statements factorial-code))
