@@ -155,8 +155,10 @@
      (branch (label primitive-apply))
      (test (op compound-procedure?) (reg proc))
      (branch (label compound-apply))
-     (test (op controller-procedure?) (reg proc))
+     (test (op controller-procedure?) (reg proc))              ; remnants of a personal experiment, not in book
      (branch (label controller-defined-apply))
+     (test (op compiled-procedure?) (reg proc))
+     (branch (label apply-compiled))
      (goto (label unknown-procedure-type))
 
      controller-defined-apply
@@ -174,6 +176,10 @@
      (restore continue)
      (goto (reg continue))
 
+     apply-compiled
+     (restore continue)                                      ; compiled procedures expect a value in the continue register
+     (assign val (op compiled-procedure-entry) (reg proc))
+     (goto (reg val))
 
      compound-apply
      (assign unev (op procedure-parameters) (reg proc))

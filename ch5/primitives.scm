@@ -11,6 +11,7 @@
                      '<procedure-env>
                  )))
     ((thunk? object) (display (list 'thunk (thunk-expr object) '<thunk-env>)))
+    ((compiled-procedure? object) (display '<compiled-procedure>))
     (else (display object))
     )
   )

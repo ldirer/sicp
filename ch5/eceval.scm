@@ -43,5 +43,8 @@
 ;(trace-register eceval 'exp #t)
 ;(trace-register eceval 'continue #t)
 
+; required after section 5.5, adding 'external-entry' label to repl controller code (to run compiled code)
+; false means "no compiled code"
+(set-register-contents! eceval 'flag #f)
 (start eceval)
 

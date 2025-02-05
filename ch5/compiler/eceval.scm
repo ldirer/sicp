@@ -13,7 +13,6 @@
 
 (load "ch5/ex5.23.scm")
 (load "ch5/ex5.24.scm")
-;(load "ch5/ex5.24_.scm")
 
 (define evaluator-controller
   (append
@@ -42,6 +41,4 @@
 ;(trace-register eceval 'unev #t)
 ;(trace-register eceval 'exp #t)
 ;(trace-register eceval 'continue #t)
-
-(start eceval)
 

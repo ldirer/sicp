@@ -102,7 +102,8 @@
           get-value-code
           (make-instruction-sequence '(env val) (list target)
             `(
-               ; todo might need to change this because I adapted the operation to return a value (for error handling)
+               ; might need to change this because I adapted the operation to return a value (for error handling)
+               ; though I guess it's fine to 'perform' an op that returns something. It just means we don't have error handling in _this_ case.
                (perform (op set-variable-value!) (const ,var) (reg val) (reg env))
                (assign ,target (const ok))
                )

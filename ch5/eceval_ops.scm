@@ -5,6 +5,8 @@
 (load "ch4/interpreter_rules.scm")
 (load "ch5/lazy.scm")
 (load "ch5/ex5.30_a.scm")
+; compiled-procedure? and co
+(load "ch5/compiler/compiler.scm")
 
 (define (empty-arglist) (list))
 (define (adjoin-arg arg arglist) (append arglist (list arg)))
@@ -41,6 +43,14 @@
 
 (define eceval-operations
   (list
+    ; section 5.5.7
+    (list 'make-compiled-procedure make-compiled-procedure)
+    (list 'compiled-procedure-env compiled-procedure-env)
+    (list 'compiled-procedure? compiled-procedure?)
+    (list 'compiled-procedure-entry compiled-procedure-entry)
+    (list 'list list)
+    (list 'false? false?)
+
     ; ex5.30
     (list 'unbound-variable-error? unbound-variable-error?)
     (list 'too-many-arguments-error? too-many-arguments-error?)
