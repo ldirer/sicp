@@ -1,7 +1,7 @@
 (load "testing.scm")
 (load "ch5/compiler/compile_and_run.scm")
 
-; At first I tried to compile the example with 'let'... but the compiler does not handle that!
+; At first I tried to compile the example with 'let'... but the version of the compiler I had at the time did not handle that!
 ; gave weird errors.
 (check-equal "example from book"
   (compile-and-run

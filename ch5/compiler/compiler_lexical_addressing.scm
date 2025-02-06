@@ -2,6 +2,9 @@
 (load "ch5/compiler/instruction_sequence.scm")
 (load "ch5/compiler/ex5.38.scm")
 (load "ch5/compiler/compiler_environment.scm")
+(load "ch5/compiler/ex5.43.scm")
+; let->combination
+(load "ch4/interpreter_rules.scm")
 
 ; ex5.38
 (define (open-coded-primitive? exp)
@@ -19,6 +22,7 @@
     ((lambda? exp) (compile-lambda exp target linkage comp-env))
     ((begin? exp) (compile-sequence (begin-actions exp) target linkage comp-env))
     ((cond? exp) (compile (cond->if exp) target linkage comp-env))
+    ((let? exp) (compile (let->combination exp) target linkage comp-env))
     ;((open-coded-primitive? exp) (compile-primitive-op exp target linkage comp-env))
     ((open-coded-primitive? exp) (compile-primitive-op-bis exp target linkage comp-env))
     ((application? exp) (compile-application exp target linkage comp-env))
@@ -227,7 +231,8 @@
            (assign env (op extend-environment) (const ,formals) (reg argl) (reg env))
            )
         )
-      (compile-sequence (lambda-body exp) 'val 'return (extend-compiler-environment formals comp-env))
+      ; converting defines to let (sugar for lambdas). ex5.43, makes lexical addressing work everywhere outside of global environment.
+      (compile-sequence (scan-out-defines (lambda-body exp)) 'val 'return (extend-compiler-environment formals comp-env))
       )
     )
   )

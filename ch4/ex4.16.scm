@@ -37,7 +37,7 @@
   (define definitions (filter definition? body))
   (define non-definitions (filter (lambda (expr) (not (definition? expr))) body))
 
-  (define let-bindings (map (lambda (def) (make-let-binding (definition-variable def) '*unassigned*)) definitions))
+  (define let-bindings (map (lambda (def) (make-let-binding (definition-variable def) ''*unassigned*)) definitions))
   (define assignments (map (lambda (def) (make-assignment (definition-variable def) (definition-value def))) definitions))
 
 
@@ -56,7 +56,7 @@
 )
 
 (scan-out-defines test-code)
-;Value: (let ((u *unassigned*) (v *unassigned*)) (set! u 1) (set! v 2) (+ u v))
+;Value: (let ((u '*unassigned*) (v '*unassigned*)) (set! u 1) (set! v 2) (+ u v))
 
 ; c. it's better to add the transform in make-procedure (as opposed to putting it inside `procedure-body`):
 ; 1. Separation of concerns
