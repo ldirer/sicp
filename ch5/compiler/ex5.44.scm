@@ -4,6 +4,7 @@
 
 ; reproducing the issue mentioned in the book
 ; not doing matrices because idk how to represent these
+; code change is in compiler_lexical_addressing.scm (small change).
 
 (define program '(begin
      (define (f + * a b x y)
@@ -19,10 +20,9 @@
 
      (define +str string-append)
 
-     (f +str *str "oh " "ah " 3 2)
+     (f +str *str "jolly good." " cup of tea then, Bruce" 1 1)
      )
   )
 
-;(display-list (statements (compile program 'val 'next the-empty-compiler-environment)))
 (define result (compile-and-run program))
-(check-equal "correctly interpreted + and * as variables" result "oh oh oh ah ah ")
+(check-equal "correctly interpreted + and * as variables" result "jolly good. cup of tea then, Bruce")

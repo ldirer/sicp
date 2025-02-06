@@ -7,8 +7,14 @@
 (load "ch4/interpreter_rules.scm")
 
 ; ex5.38
-(define (open-coded-primitive? exp)
-  (and (pair? exp) (memq (car exp) '(+ * = -)))
+(define (open-coded-primitive? exp comp-env)
+  ; ex5.44: check if the name has not been overwritten by the user.
+  ; note this does not cover overwriting the variable with a top-level define/set! (mentioned in the exercise text, p603 paper).
+  (and
+    (pair? exp)
+    (memq (car exp) '(+ * = -))
+    (equal? (find-variable (car exp) comp-env) 'not-found)
+    )
   )
 
 (define (compile exp target linkage comp-env)
@@ -24,7 +30,7 @@
     ((cond? exp) (compile (cond->if exp) target linkage comp-env))
     ((let? exp) (compile (let->combination exp) target linkage comp-env))
     ;((open-coded-primitive? exp) (compile-primitive-op exp target linkage comp-env))
-    ((open-coded-primitive? exp) (compile-primitive-op-bis exp target linkage comp-env))
+    ((open-coded-primitive? exp comp-env) (compile-primitive-op-bis exp target linkage comp-env))
     ((application? exp) (compile-application exp target linkage comp-env))
     (else (error "Unknown expression type -- COMPILE" exp))
     )
@@ -103,10 +109,10 @@
               ; Annoyingly this would also need to be part of the eceval controller if we plug them together...
               ; So I'm just uncommenting the error handling when I want to test something with 'compile-and-run'.
               `((assign ,target (op lookup-variable-value) (const ,exp) (reg env))
-;                 (test (op unbound-variable-error?) (reg ,target))
-;                 ; this does not work well because crash assumes the error is in (reg val). But it's in target.
-;                 ; I don't know how to fix that cleanly. So now I have crash-val crash-arg1 crash-arg2 crash-proc... it works.
-;                 (branch (label ,(produce-composite-symbol 'crash target)))
+                 (test (op unbound-variable-error?) (reg ,target))
+                 ; this does not work well because crash assumes the error is in (reg val). But it's in target.
+                 ; I don't know how to fix that cleanly. So now I have crash-val crash-arg1 crash-arg2 crash-proc... it works.
+                 (branch (label ,(produce-composite-symbol 'crash target)))
                  )
               `((assign ,target (op lexical-address-lookup) (const ,lexical-address) (reg env)))
               )
