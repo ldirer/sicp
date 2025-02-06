@@ -25,7 +25,7 @@
 ; - We still need to test everywhere but just in one line, even if multiple types of error can be returned.
 ; - We can put the cdr in the var register and goto signal-error.
 (define UNBOUND-VARIABLE-ERROR (list 'unbound-variable-error))
-(define (unbound-variable-error? value) (eq? UNBOUND-VARIABLE-ERROR value))
+(define (unbound-variable-error? value) (and (pair? value) (eq? UNBOUND-VARIABLE-ERROR (car value))))
 
 (define (lookup-variable-value var env)
   (define (env-loop env)
@@ -37,7 +37,7 @@
         )
       )
     (cond
-      ((eq? env the-empty-environment) UNBOUND-VARIABLE-ERROR)
+      ((eq? env the-empty-environment) (cons UNBOUND-VARIABLE-ERROR var))
       (else (let ((frame (first-frame env)))
               (scan (frame-variables frame) (frame-values frame))
               )
@@ -77,7 +77,7 @@
         )
       )
     (cond
-      ((eq? env the-empty-environment) UNBOUND-VARIABLE-ERROR)
+      ((eq? env the-empty-environment) (cons UNBOUND-VARIABLE-ERROR var))
       (else (let ((frame (first-frame env)))
               (scan (frame-variables frame) (frame-values frame))
               )

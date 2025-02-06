@@ -87,12 +87,27 @@
   (end-with-linkage linkage (make-instruction-sequence '() (list target) `((assign ,target (const ,(text-of-quotation exp))))))
   )
 
+;; extremely lame, see crash-* labels below :)
+(define (produce-composite-symbol base target)
+  (string->symbol
+   (string-append (symbol->string base) "-" (symbol->string target))))
+
 (define (compile-variable exp target linkage comp-env)
   (let ((lexical-address (find-variable exp comp-env)))
     (let ((statements
             (if (equal? lexical-address 'not-found)
               ; use the regular runtime variable lookup
-              `((assign ,target (op lookup-variable-value) (const ,exp) (reg env)))
+              ; when lookup-variable-value reports a 'not found', the compiled code will crash with an obscure 'safe-car called on ()' error.
+              ; I would like to handle errors. My sanity over performance.
+              ; This involves adding controller code to the machine.
+              ; Annoyingly this would also need to be part of the eceval controller if we plug them together...
+              ; So I'm just uncommenting the error handling when I want to test something with 'compile-and-run'.
+              `((assign ,target (op lookup-variable-value) (const ,exp) (reg env))
+;                 (test (op unbound-variable-error?) (reg ,target))
+;                 ; this does not work well because crash assumes the error is in (reg val). But it's in target.
+;                 ; I don't know how to fix that cleanly. So now I have crash-val crash-arg1 crash-arg2 crash-proc... it works.
+;                 (branch (label ,(produce-composite-symbol 'crash target)))
+                 )
               `((assign ,target (op lexical-address-lookup) (const ,lexical-address) (reg env)))
               )
             ))
@@ -233,6 +248,7 @@
         )
       ; converting defines to let (sugar for lambdas). ex5.43, makes lexical addressing work everywhere outside of global environment.
       (compile-sequence (scan-out-defines (lambda-body exp)) 'val 'return (extend-compiler-environment formals comp-env))
+      ;(compile-sequence (lambda-body exp) 'val 'return (extend-compiler-environment formals comp-env))
       )
     )
   )

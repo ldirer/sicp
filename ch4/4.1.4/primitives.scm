@@ -46,6 +46,8 @@
     ; We could do it with a custom `map` definition that handles our typed objects.
 ;    (list 'map map)
     (list 'not not)
+    ; for ex5.44
+    (list 'string-append string-append)
     )
   )
 

@@ -33,3 +33,12 @@
     )
   10
   )
+
+(check-equal "simple with string-append"
+  (compile-and-run
+    '(begin
+       (string-append "oh" " no")
+       )
+    )
+  "oh no"
+  )

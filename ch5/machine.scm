@@ -7,7 +7,9 @@
       (cond
         ((eq? message 'get) contents)
         ((eq? message 'set) (lambda (value) (set! contents value)))
-        ; debugging
+        ; debugging - I used that a couple times when an interpreted/compiled program crashed
+        ; it crashes in some (set-contents! target (value-proc)), *really* not very helpful
+        ; At least by entering the debugger and an environment I can figure out the register involved with (target 'name).
         ((eq? message 'name) name)
         (else (error "Unknown request -- REGISTER" message))
         )

@@ -15,6 +15,9 @@
       (append
         minimal-controller-start
         (statements (compile expression 'val 'next the-empty-compiler-environment))
+        minimal-controller-after-program-success
+        minimal-controller-crash
+        minimal-controller-end
         )
       )
     )
@@ -33,5 +36,41 @@
      (assign env (op get-global-environment))
      ; contrary to compile-and-go, no need to setup continue because we compile with 'next (so the program exits)
      ; also we don't jump to val, the instructions will just be appended.
+     )
+  )
+
+; allows bypassing 'crash'
+; must be before the compiled program to avoid unconditionally falling through this when compiling with 'next.
+(define minimal-controller-after-program-success
+  '(
+     program-success
+     (goto (label done))
+     )
+  )
+
+(define minimal-controller-crash
+  '(
+     crash-proc
+     (assign val (reg proc))
+     (goto (label crash))
+     crash-arg1
+     (assign val (reg arg1))
+     (goto (label crash))
+     crash-arg2
+     (assign val (reg arg2))
+     (goto (label crash))
+     crash-argl
+     (assign val (reg argl))
+     (goto (label crash))
+     crash-val
+     crash
+     (assign val (op cons) (const "reporting an error!") (reg val))
+     (goto (label done))
+     )
+  )
+
+(define minimal-controller-end
+  '(
+     done
      )
   )
