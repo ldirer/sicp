@@ -77,6 +77,7 @@
              (list
                (list 'initialize-stack (lambda () (stack 'initialize)))
                (list 'print-stack-statistics (lambda () (stack 'print-statistics)))
+               (list 'get-stack-statistics (lambda () (stack 'get-statistics)))
                (list 'print-and-reset-instruction-counter print-and-reset-instruction-counter)
                )
              )

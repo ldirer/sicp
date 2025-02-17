@@ -6,6 +6,22 @@
 ; let->combination
 (load "ch4/interpreter_rules.scm")
 
+(define FLAGS (list
+                (cons 'open-coded-primitives #f)
+                (cons 'unbound-variable-error-handling #f)
+                ))
+
+(define (get-flag-value key)
+  (let ((found (assoc key FLAGS)))
+    (if (not found)
+      (error "key is not a correct flag" key)
+      (cdr found)
+      )
+    )
+  )
+(define (flag-unbound-variable-error-handling-on?) (get-flag-value 'unbound-variable-error-handling))
+(define (flag-open-coded-primitives?) (get-flag-value 'open-coded-primitives))
+
 ; ex5.38
 (define (open-coded-primitive? exp comp-env)
   ; ex5.44: check if the name has not been overwritten by the user.
@@ -30,7 +46,7 @@
     ((cond? exp) (compile (cond->if exp) target linkage comp-env))
     ((let? exp) (compile (let->combination exp) target linkage comp-env))
     ;((open-coded-primitive? exp) (compile-primitive-op exp target linkage comp-env))
-    ((open-coded-primitive? exp comp-env) (compile-primitive-op-bis exp target linkage comp-env))
+    ((and (flag-open-coded-primitives?) (open-coded-primitive? exp comp-env)) (compile-primitive-op-bis exp target linkage comp-env))
     ((application? exp) (compile-application exp target linkage comp-env))
     (else (error "Unknown expression type -- COMPILE" exp))
     )
@@ -96,7 +112,7 @@
 ;; extremely lame, see crash-* labels below :)
 (define (produce-composite-symbol base target)
   (string->symbol
-   (string-append (symbol->string base) "-" (symbol->string target))))
+    (string-append (symbol->string base) "-" (symbol->string target))))
 
 (define (compile-variable exp target linkage comp-env)
   (let ((lexical-address (find-variable exp comp-env)))
@@ -108,12 +124,16 @@
               ; This involves adding controller code to the machine.
               ; Annoyingly this would also need to be part of the eceval controller if we plug them together...
               ; So I'm just uncommenting the error handling when I want to test something with 'compile-and-run'.
-              `((assign ,target (op lookup-variable-value) (const ,exp) (reg env))
-                 (test (op unbound-variable-error?) (reg ,target))
-                 ; this does not work well because crash assumes the error is in (reg val). But it's in target.
-                 ; I don't know how to fix that cleanly. So now I have crash-val crash-arg1 crash-arg2 crash-proc... it works.
-                 (branch (label ,(produce-composite-symbol 'crash target)))
-                 )
+              (if (flag-unbound-variable-error-handling-on?)
+                `(
+                   (assign ,target (op lookup-variable-value) (const ,exp) (reg env))
+                   (test (op unbound-variable-error?) (reg ,target))
+                   ; this does not work well because crash assumes the error is in (reg val). But it's in target.
+                   ; I don't know how to fix that cleanly. So now I have crash-val crash-arg1 crash-arg2 crash-proc... it works.
+                   (branch (label ,(produce-composite-symbol 'crash target)))
+                   )
+                `((assign ,target (op lookup-variable-value) (const ,exp) (reg env)))
+                )
               `((assign ,target (op lexical-address-lookup) (const ,lexical-address) (reg env)))
               )
             ))

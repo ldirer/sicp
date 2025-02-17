@@ -81,6 +81,7 @@
              (list
                (list 'initialize-stack (lambda () (stack 'initialize)))
                (list 'print-stack-statistics (lambda () (stack 'print-statistics)))
+               (list 'get-stack-statistics (lambda () (stack 'get-statistics)))
                )
              )
            (register-table

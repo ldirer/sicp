@@ -4,13 +4,16 @@
 (load "ch5/compiler/compiler_lexical_addressing.scm")
 
 
+(set! FLAGS (cons (cons 'unbound-variable-error-handling #t) FLAGS))
+(set! FLAGS (cons (cons 'open-coded-primitives #t) FLAGS))
 ;; compile the expression, run it and return the result.
 ;; this is an instance of a useful tool that I should have written earlier.
 ;; I felt like it would be useful, wasn't too sure... but it was easy to write!
 ;; and it is so useful to test compiled output in a file.
-(define (compile-and-run expression)
+; optional argument: a 'continuation function' that will be called with the stack statistics
+(define (compile-and-run expression . maybe-stats-receiver)
   (define machine
-    (make-machine '(exp env val proc argl continue unev debug arg1 arg2)
+    (make-machine '(exp env val proc argl continue unev debug arg1 arg2 stack-stats)
       eceval-operations
       (append
         minimal-controller-start
@@ -24,6 +27,10 @@
 
   (set! the-global-environment (setup-environment))
   (start machine)
+
+  (if (not (null? maybe-stats-receiver))
+    ((car maybe-stats-receiver) (get-register-contents machine 'stack-stats))
+    )
 
   ; returning the value! so much nicer than printing for testing. I didn't realize I would be able to do that.
   (get-register-contents machine 'val)
@@ -72,5 +79,6 @@
 (define minimal-controller-end
   '(
      done
+     (assign stack-stats (op get-stack-statistics))
      )
   )
