@@ -1,4 +1,4 @@
-; rlwrap scheme --load "ch5/eceval.scm"
+; rlwrap scheme --load "ch5/compiler/eceval.scm"
 (load "ch4/interpreter_preload.scm")
 (load "ch5/repl_controller.scm")
 (load "ch5/compiler/evaluator_controller.scm")
@@ -35,6 +35,8 @@
       )
     )
   )
+; section 5.5, 'external-entry' label in repl to start with compiled code
+(set-register-contents! eceval 'flag #f)
 
 ;; requires 5.17
 ;(eceval 'trace-on)

@@ -1,4 +1,6 @@
 (load "ch4/environment.scm")
+(load "ch5/compiler/ex5.48_interpreter_compile_and_run.scm")
+
 (define (setup-environment)
   (let ((initial-env
           (extend-environment (primitive-procedure-names)
@@ -48,6 +50,8 @@
     (list 'not not)
     ; for ex5.44
     (list 'string-append string-append)
+    ; ex5.48
+    (list 'compile-and-run interpreter-compile-and-run)
     )
   )
 
