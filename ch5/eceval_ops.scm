@@ -44,6 +44,8 @@
 
 (define eceval-operations
   (list
+    ; ex5.46 - adding < as open-coded primitive
+    (list '< <)
     ; lexical addressing
     (list 'lexical-address-lookup lexical-address-lookup)
     (list 'lexical-address-set! lexical-address-set!)

@@ -2,7 +2,7 @@
 (load "ch5/compiler/compiler_lexical_addressing.scm")
 (load "ch5/compiler/utils.scm")
 (load "ch5/compiler/compiler_environment.scm")
-(load "ch5/compiler/ex5.38.scm")
+(load "ch5/compiler/ex5.38_open_coded_primitives.scm")
 
 (define factorial-code (compile '(define (factorial n)
                                    (if (= n 1)

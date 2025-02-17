@@ -1,6 +1,6 @@
 (load "ch4/syntax.scm")
 (load "ch5/compiler/instruction_sequence.scm")
-(load "ch5/compiler/ex5.38.scm")
+(load "ch5/compiler/ex5.38_open_coded_primitives.scm")
 (load "ch5/compiler/compiler_environment.scm")
 (load "ch5/compiler/ex5.43.scm")
 ; let->combination
@@ -28,7 +28,7 @@
   ; note this does not cover overwriting the variable with a top-level define/set! (mentioned in the exercise text, p603 paper).
   (and
     (pair? exp)
-    (memq (car exp) '(+ * = -))
+    (memq (car exp) '(+ * = - <))
     (equal? (find-variable (car exp) comp-env) 'not-found)
     )
   )
