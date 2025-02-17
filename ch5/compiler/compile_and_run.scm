@@ -13,7 +13,8 @@
 ; optional argument: a 'continuation function' that will be called with the stack statistics
 (define (compile-and-run expression . maybe-stats-receiver)
   (define machine
-    (make-machine '(exp env val proc argl continue unev debug arg1 arg2 stack-stats)
+    ; compapp from ex5.47
+    (make-machine '(exp env val proc argl continue unev debug arg1 arg2 stack-stats compapp)
       eceval-operations
       (append
         minimal-controller-start

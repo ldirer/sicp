@@ -1,5 +1,6 @@
 (define repl-controller
   '(
+     (assign compapp (label compound-apply))
      (branch (label external-entry))                ; branches if flag is set
 
      read-eval-print-loop

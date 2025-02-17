@@ -341,6 +341,7 @@
 (define (compile-procedure-call target linkage comp-env)
   (let ((primitive-branch (make-label 'primitive-branch))
          (compiled-branch (make-label 'compiled-branch))
+         (interpreted-branch (make-label 'interpreted-branch))
          (after-call (make-label 'after-call)))
     (let ((compiled-linkage (if (eq? linkage 'next) after-call linkage)))
       (append-instruction-sequences
@@ -348,17 +349,22 @@
           `(
              (test (op primitive-procedure?) (reg proc))
              (branch (label ,primitive-branch))
+             (test (op compound-procedure?) (reg proc))
+             (branch (label ,interpreted-branch))
              )
           )
         (parallel-instruction-sequences
           (append-instruction-sequences compiled-branch (compile-proc-appl target compiled-linkage))
-          (append-instruction-sequences
-            primitive-branch
-            (end-with-linkage linkage
-              (make-instruction-sequence '(proc argl) (list target)
-                `(
-                   (assign ,target (op apply-primitive-procedure) (reg proc) (reg argl))
-                   )
+          (parallel-instruction-sequences
+            (append-instruction-sequences interpreted-branch (interpreted-proc-appl target compiled-linkage))
+            (append-instruction-sequences
+              primitive-branch
+              (end-with-linkage linkage
+                (make-instruction-sequence '(proc argl) (list target)
+                  `(
+                     (assign ,target (op apply-primitive-procedure) (reg proc) (reg argl))
+                     )
+                  )
                 )
               )
             )
@@ -369,6 +375,44 @@
     )
   )
 
+(define (interpreted-proc-appl target linkage)
+  (cond
+    ((and (not (eq? target 'val)) (eq? linkage 'return)) (error "return linkage, target not val -- COMPILE" target))    ; moved error cond first compared to book
+    ((and (eq? target 'val) (not (eq? linkage 'return)))
+      (make-instruction-sequence '(proc) all-regs
+        `(
+           ; again, the interpreter apply code expects continue **on the stack**
+           (assign continue (label ,linkage))
+           (save continue)
+           ; compapp: special register holding the 'compound-apply' label location so we can jump to the interpreter from compiler-generated code.
+           (goto (reg compapp))
+           )
+        )
+      )
+    ((and (not (eq? target 'val)) (not (eq? linkage 'return)))
+      (let ((proc-return (make-label 'proc-return)))
+        (make-instruction-sequence '(proc) all-regs
+          `(
+             (assign continue (label ,proc-return))
+             (save continue)
+             (goto (reg compapp))
+             ,proc-return
+             (assign ,target (reg val))
+             (goto (label ,linkage))
+             )
+          )
+        )
+      )
+    ((and (eq? target 'val) (eq? linkage 'return))
+      (make-instruction-sequence '(proc continue) all-regs
+        '(
+           (save continue)              ; return destination is in continue. compound-apply expects it on the stack.
+           (goto (reg compapp))
+           )
+        )
+      )
+    )
+  )
 
 (define (compile-proc-appl target linkage)
   (cond
