@@ -27,6 +27,10 @@
     )
 
   (set! the-global-environment (setup-environment))
+  (define aaa (lookup-variable-value 'list the-global-environment))
+  (newline)
+  (display "aaa ")
+  (display aaa)
   (start machine)
 
   (if (not (null? maybe-stats-receiver))

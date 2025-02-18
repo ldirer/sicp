@@ -47,6 +47,7 @@
     ((let? exp) (compile (let->combination exp) target linkage comp-env))
     ;((open-coded-primitive? exp) (compile-primitive-op exp target linkage comp-env))
     ((and (flag-open-coded-primitives?) (open-coded-primitive? exp comp-env)) (compile-primitive-op-bis exp target linkage comp-env))
+    ((apply-special-form? exp) (compile-apply-special-form exp target linkage comp-env))
     ((application? exp) (compile-application exp target linkage comp-env))
     (else (error "Unknown expression type -- COMPILE" exp))
     )
@@ -447,6 +448,31 @@
            (assign val (op compiled-procedure-entry) (reg proc))
            (goto (reg val))
            )
+        )
+      )
+    )
+  )
+
+
+; ex5.50
+(define (apply-special-form? exp)
+  (tagged-list? exp 'apply-special-form)
+  )
+(define (apply-special-form-proc exp) (cadr exp))
+(define (apply-special-form-args exp) (caddr exp))
+; if we make apply a primitive only, it won't be able to call compiled procedures.
+; to keep it general I think we *need* a special form.
+; having 'apply apply-primitive-procedure to the list of primitives would have looked like it worked.
+; but then the metacircular evaluator code would use an 'apply' that is assumed to be generic when it really isn't.
+(define (compile-apply-special-form exp target linkage comp-env)
+  (let ((proc-code (compile (apply-special-form-proc exp) 'proc 'next comp-env))
+         ; args list goes into argl
+         (args-codes (compile (apply-special-form-args exp) 'argl 'next comp-env)))
+    (preserving '(env continue)
+      proc-code
+      (preserving '(proc continue)
+        args-codes
+        (compile-procedure-call target linkage comp-env)
         )
       )
     )

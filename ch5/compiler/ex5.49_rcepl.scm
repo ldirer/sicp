@@ -23,6 +23,8 @@
     )
   )
 
+(display "Debug with 'compile-and-run' over this if encountering odd behavior. Better error handling.")
+(newline)
 (start rcepl-machine)
 
 

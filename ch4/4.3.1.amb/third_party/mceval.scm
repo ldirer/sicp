@@ -1,5 +1,6 @@
-; I used this exclusively for debugging/comparison of behavior.
+; I used this exclusively for debugging/comparison of behavior. Then I used it again in ex5.50.
 ; source: https://github.com/boothj5/sicp-code/blob/master/ch4-mceval.scm
+; I added a few primitives to test things in ex5.50.
 
 ;;;;METACIRCULAR EVALUATOR FROM CHAPTER 4 (SECTIONS 4.1.1-4.1.4) of
 ;;;; STRUCTURE AND INTERPRETATION OF COMPUTER PROGRAMS
@@ -309,6 +310,16 @@
         (list 'cons cons)
         (list 'null? null?)
 ;;      more primitives
+        (list 'list list)
+        (list '+ +)
+        (list '- -)
+        (list '* *)
+        (list '/ /)
+        (list '< <)
+        (list '> >)
+        (list '= =)
+        (list '>= >=)
+        (list '<= <=)
         ))
 
 (define (primitive-procedure-names)

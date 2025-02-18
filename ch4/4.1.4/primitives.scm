@@ -52,6 +52,27 @@
     (list 'string-append string-append)
     ; ex5.48
     (list 'compile-and-run interpreter-compile-and-run)
+    ; ex5.50
+    (list 'apply-compiler-primitive-procedure apply-primitive-procedure)
+    (list 'list list)
+    ; grep -Eio "c[ad]*r" ch4/4.3.1.amb/third_party/mceval.scm | sort | uniq
+    (list 'cadr cadr)
+    (list 'cddr cddr)
+    (list 'caddr caddr)
+    (list 'caadr caadr)
+    (list 'cdadr cdadr)
+    (list 'cadddr cadddr)
+    (list 'cdddr cdddr)
+    (list 'length length)
+    (list 'eq? eq?)
+    (list 'set-car! set-car!)
+    (list 'set-cdr! set-cdr!)
+    (list 'read read)
+    (list 'number? number?)
+    (list 'pair? pair?)
+    (list 'string? string?)
+    (list 'symbol? symbol?)
+    (list 'error error)
     )
   )
 
