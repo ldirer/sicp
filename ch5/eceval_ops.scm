@@ -8,6 +8,7 @@
 ; compiled-procedure? and co
 (load "ch5/compiler/compiler.scm")
 (load "ch5/compiler/ex5.39_lexical_addressing.scm")
+(load "ch5/compiler/compiler_environment.scm")
 
 (define (empty-arglist) (list))
 (define (adjoin-arg arg arglist) (append arglist (list arg)))
@@ -39,11 +40,18 @@
   )
 
 
+(define (compile-and-more exp)
+  (assemble (statements (compile exp 'val 'return the-empty-compiler-environment)) rcepl-machine)
+  )
+
 (define (controller-procedure? obj) (eq? (car obj) 'controller-procedure))
 (define (controller-procedure-label obj) (cdr obj))
 
 (define eceval-operations
   (list
+    ; ex5.49
+    (list 'compile-and-more compile-and-more)
+
     ; ex5.46 - adding < as open-coded primitive
     (list '< <)
     ; lexical addressing
